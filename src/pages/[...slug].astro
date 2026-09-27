@@ -1,0 +1,19 @@
+---
+// Every page of the site comes from this route: one home page and seven exam pages per language.
+import HomePage from '../components/HomePage.astro';
+import ExamPage from '../components/ExamPage.astro';
+import { EXAM_IDS, examPath, homePath, type ExamId, type Lang } from '../data/site';
+import { ACTIVE_LANGS } from '../i18n';
+
+export function getStaticPaths() {
+  const slug = (p: string) => p.replace(/^\/|\/$/g, '') || undefined;
+  return ACTIVE_LANGS.flatMap((lang) => [
+    { params: { slug: slug(homePath(lang)) }, props: { lang, id: undefined } },
+    ...EXAM_IDS.map((id) => ({ params: { slug: slug(examPath(lang, id)) }, props: { lang, id } })),
+  ]);
+}
+
+interface Props { lang: Lang; id?: ExamId }
+const { lang, id } = Astro.props;
+---
+{id ? <ExamPage lang={lang} id={id} /> : <HomePage lang={lang} />}

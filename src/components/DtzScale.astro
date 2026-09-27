@@ -1,0 +1,13 @@
+---
+import type { Lang } from '../data/site';
+import { dict } from '../i18n';
+
+interface Props { lang: Lang; class?: string }
+const { lang, class: cls } = Astro.props;
+const d = dict(lang);
+---
+<div class:list={['scale', cls]} role="img" aria-label={`${d.formats.dtzScale}: 0–19 ${d.formats.below}, 20–32 A2, 33–45 B1`}>
+  <div class="lbl">{d.formats.dtzScale}</div>
+  <div class="scale-bar"><i>{d.formats.below}</i><i>A2</i><i>B1</i></div>
+  <div class="scale-ticks"><span style="left:0">0</span><span style="left:43.5%">20</span><span style="left:71.7%">33</span><span style="left:100%">45</span></div>
+</div>

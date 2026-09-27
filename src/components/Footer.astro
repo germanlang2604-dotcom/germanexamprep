@@ -1,0 +1,37 @@
+---
+import { EXAM_IDS, LANG_META, CONTACT_EMAIL, PRIVACY_URL, examPath, type Lang } from '../data/site';
+import { EXAMS } from '../data/exams';
+import { ACTIVE_LANGS, dict } from '../i18n';
+
+interface Props { lang: Lang; alternates: Partial<Record<Lang, string>> }
+const { lang, alternates } = Astro.props;
+const d = dict(lang);
+---
+<footer class="site">
+  <div class="wrap">
+    <div class="cols">
+      <nav aria-labelledby="f-exams">
+        <h2 id="f-exams">{d.footer.exams}</h2>
+        <ul>
+          {EXAM_IDS.map((id) => <li><a href={examPath(lang, id)}>{EXAMS[id].short}</a></li>)}
+        </ul>
+      </nav>
+      <nav aria-labelledby="f-langs">
+        <h2 id="f-langs">{d.footer.languages}</h2>
+        <ul>
+          {ACTIVE_LANGS.map((l) => (
+            <li><a href={alternates[l]} lang={l} hreflang={l} aria-current={l === lang ? 'page' : undefined}>{LANG_META[l].name}</a></li>
+          ))}
+        </ul>
+      </nav>
+      <div>
+        <h2>German Exam Simulator</h2>
+        <ul>
+          <li><a href={PRIVACY_URL} rel="noopener">{d.footer.privacy}</a></li>
+          <li><span>{d.footer.contact}: <span dir="ltr">{CONTACT_EMAIL}</span></span></li>
+        </ul>
+      </div>
+    </div>
+    <p class="legal">{d.footer.disclaimer} © 2026 GermanLang.</p>
+  </div>
+</footer>

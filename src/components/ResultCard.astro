@@ -1,0 +1,18 @@
+---
+// German result screen of the app, for one exam.
+import type { Exam } from '../data/exams';
+import { resultRowsHtml } from '../lib/render';
+
+interface Props { exam: Exam; stamped?: boolean }
+const { exam, stamped = false } = Astro.props;
+---
+<div class="res">
+  <div class="res-card">
+    <div class="brandline">German Exam Simulator</div>
+    <h6>Prüfungsergebnis</h6>
+    <div class="lv" data-res="name">{exam.name}</div>
+    <div class="rule" data-res="rule">{exam.scoring.ruleDe}</div>
+    <div class:list={['stamp', { in: stamped }]} data-res="stamp">{exam.scoring.stamp ?? 'BESTANDEN'}</div>
+    <div data-res="rows" set:html={resultRowsHtml(exam)} />
+  </div>
+</div>

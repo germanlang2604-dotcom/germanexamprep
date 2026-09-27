@@ -1,0 +1,98 @@
+---
+// The phone in the home page story: one screen per module plus the result.
+// Screens show real sample tasks from the app (Goethe B1); circles, clocks and the
+// result card follow the exam chosen in the picker.
+import { phoneConfig, type Exam } from '../data/exams';
+import ResultCard from './ResultCard.astro';
+
+interface Props { exam: Exam }
+const { exam } = Astro.props;
+const pc = phoneConfig(exam);
+const clock = (m: number) => `${String(m - 1).padStart(2, '0')}:59`;
+const circles = (n: number) => Array.from({ length: n }, (_, i) => i + 1);
+const back = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 12H5M11 5l-7 7 7 7"/></svg>';
+---
+<div class="phone" aria-hidden="true">
+  <div class="screen" id="storyScreen">
+    <div class="notch"></div>
+    <div class="sbar"><span>15:35</span><span>●●● 100</span></div>
+
+    <div class="scr on" data-scr="0">
+      <div class="ah"><Fragment set:html={back} /><h5>Restzeit: <span class="clock" data-mod data-start={pc.lesen.minutes * 60 - 1}>{clock(pc.lesen.minutes)}</span></h5></div>
+      <div class="teile" data-label="Lesen"><b>Lesen</b>{circles(pc.lesen.circles).map((n) => <span class:list={{ a: n === 1 }}>{n}</span>)}</div>
+      <div class="sb">
+        <h6>Lesen Teil 1</h6>
+        <p class="ins">Sie lesen eine E-Mail. Wählen Sie: Sind die Aussagen richtig oder falsch?</p>
+        <div class="card w">
+          <h6>Neuigkeiten aus Leipzig und mein erster Monat!</h6>
+          <p>Hallo Jonas,<br /><br />wie geht es dir? Stell dir vor, mein erster Monat in Leipzig ist schon vorbei. Du weißt ja, dass ich große Angst vor dem Umzug hatte, weil ich hier niemanden kannte. Aber ich muss sagen, die Entscheidung war absolut richtig.<br /><br />Meine neue Arbeit in der Werbeagentur gefällt mir total gut.</p>
+        </div>
+      </div>
+      <div class="done">FERTIG / NÄCHSTER TEIL</div>
+    </div>
+
+    <div class="scr" data-scr="1">
+      <div class="ah"><Fragment set:html={back} /><h5>Restzeit: <span class="clock" data-mod data-start={pc.hoeren.minutes * 60 - 1}>{clock(pc.hoeren.minutes)}</span></h5></div>
+      <div class="teile" data-label="Hören"><b>Hören</b>{circles(pc.hoeren.circles).map((n) => <span class:list={{ a: n === 1 }}>{n}</span>)}</div>
+      <div class="sb">
+        <h6>Hören Teil 1</h6>
+        <p class="ins">Sie hören fünf kurze Texte. Sie hören jeden Text zweimal.</p>
+        <div class="card w">
+          <div class="audio"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9zm13.5 3A4.5 4.5 0 0014 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg><div class="track"><i id="aBar"></i></div><span class="t"><span id="aT">00:01</span> / 07:23</span></div>
+          <div class="audio-note">Sie hören diesen Teil zweimal.</div>
+        </div>
+        <div class="card">
+          <div class="kt">Text 1</div>
+          <p><b>1. Die Praxis ruft an, um einen Termin abzusagen.</b></p>
+          <div class="rf"><span class="r">richtig</span><span class="f" id="falsch">falsch</span></div>
+        </div>
+        <div class="card">
+          <div class="kt">Text 1</div>
+          <p><b>2. Herr Becker soll …</b></p>
+          <div class="opt"><i>A</i>am Donnerstag in die Praxis kommen.</div>
+        </div>
+      </div>
+      <div class="done">FERTIG / NÄCHSTER TEIL</div>
+    </div>
+
+    <div class="scr" data-scr="2">
+      <div class="ah"><Fragment set:html={back} /><h5>Restzeit: <span class="clock" data-mod data-start={pc.schreiben.minutes * 60 - 1}>{clock(pc.schreiben.minutes)}</span></h5></div>
+      <div class="teile" data-label="Schreiben"><b>Schreiben</b>{circles(pc.schreiben.circles).map((n) => <span class:list={{ a: n === 1 }}>{n}</span>)}</div>
+      <div class="sb">
+        <h6>Aufgabe 1 · E-Mail an eine Freundin</h6>
+        <div class="card">
+          <div class="k">Schreiben Sie über diese Punkte:</div>
+          <ul class="pts"><li>Wie war das Festival?</li><li>Warum hat sie Ihnen gefehlt?</li><li>Vorschlag: gemeinsames Abendessen</li></ul>
+        </div>
+        <div class="card w">
+          <div class="ta"><span id="typed" set:html={'Liebe Anna,\n\nam Samstag war ich auf dem Food-Festival. Die Stimmung war super und das Essen aus Korea war lecker!'} /><span class="caret"></span></div>
+          <div class="wc"><span id="wc">20</span> Wörter</div>
+        </div>
+      </div>
+      <div class="done">FERTIG / NÄCHSTE AUFGABE</div>
+    </div>
+
+    <div class="scr" data-scr="3">
+      <div class="ah"><Fragment set:html={back} /><h5 class="l">Sprechen Teil 1</h5><span class="nx">Teil 2 ›</span></div>
+      <div class="sub2"><b>Gemeinsam etwas planen</b><span class="pill">⏱ <span class="clock" data-start="298">04:58</span></span></div>
+      <div class="sb">
+        <div class="card w">
+          <h6>Situation</h6>
+          <p>Sie und Ihr Gesprächspartner möchten mit der ganzen Gruppe einen Wochenendausflug in eine andere Stadt organisieren.</p>
+        </div>
+        <div class="card">
+          <div class="k">Leitpunkte:</div>
+          <p>• Wohin und wann genau?<br />• Verkehrsmittel (Zug, Bus, …)?<br />• Übernachtung (Hostel, Hotel, …)?</p>
+        </div>
+        <div class="talk">
+          <div class="phase" id="phPartner"><div class="wave"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="who">Teilnehmer B spricht …</div></div>
+          <div class="phase off" id="phYou"><div class="mic"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 14a3 3 0 003-3V5a3 3 0 00-6 0v6a3 3 0 003 3zm5-3a5 5 0 01-10 0H5a7 7 0 006 6.92V21h2v-3.08A7 7 0 0019 11z"/></svg><span>Sprechen</span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="scr" data-scr="4">
+      <ResultCard exam={exam} />
+    </div>
+  </div>
+</div>

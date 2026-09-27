@@ -1,0 +1,206 @@
+---
+import Base from '../layouts/Base.astro';
+import ResultCard from './ResultCard.astro';
+import ScoreTable from './ScoreTable.astro';
+import StoreButtons from './StoreButtons.astro';
+import DtzScale from './DtzScale.astro';
+import { EXAMS, relatedExams, timeline, type Module } from '../data/exams';
+import { SITE, examPath, homePath, type ExamId, type Lang } from '../data/site';
+import { alternates, dict } from '../i18n';
+import { moduleTime } from '../lib/render';
+
+interface Props { lang: Lang; id: ExamId }
+const { lang, id } = Astro.props;
+const d = dict(lang);
+const e = EXAMS[id];
+const c = d.exams[id];
+const path = examPath(lang, id);
+const home = homePath(lang);
+const t = timeline(e);
+const oralTotal = t.oral.reduce((s, b) => s + b.minutes, 0);
+const oralPct = Math.round((oralTotal / e.written) * 100);
+const maxW = Math.max(...t.written.map((b) => b.minutes));
+const maxO = Math.max(...t.oral.map((b) => b.minutes));
+const faqs = [d.exam.faqDuration(e, d), d.exam.faqPass(e, c), ...c.faq, d.exam.faqApp(e)];
+
+function stats(m: Module): { text: string; pts?: boolean }[] {
+  const out: { text: string; pts?: boolean }[] = [];
+  if (m.points) out.push({ text: d.fx.points(m.points), pts: true });
+  out.push({ text: d.fx.unit(m) });
+  if (m.items) out.push({ text: d.fx.items(m.items) });
+  out.push({ text: moduleTime(e, m, d) });
+  if (m.prep) out.push({ text: d.fx.prep(m.prep) });
+  if (m.oral) out.push({ text: m.format === 'group' ? d.fx.group : d.fx.pair });
+  if (m.playedOnce) out.push({ text: d.fx.playedOnce });
+  return out;
+}
+const teilLabel = (m: Module, i: number) => (m.unit === 'tasks' ? `Aufgabe ${i + 1}` : `Teil ${i + 1}`);
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org', '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: d.nav.home, item: SITE + home },
+      { '@type': 'ListItem', position: 2, name: e.short, item: SITE + path },
+    ],
+  },
+  {
+    '@context': 'https://schema.org', '@type': 'Article', headline: c.h1, description: c.description,
+    inLanguage: lang, dateModified: '2026-09-27', mainEntityOfPage: SITE + path,
+    author: { '@type': 'Organization', name: 'German Exam Simulator', url: SITE },
+    publisher: { '@type': 'Organization', name: 'German Exam Simulator', url: SITE },
+  },
+  {
+    '@context': 'https://schema.org', '@type': 'FAQPage',
+    mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+  },
+];
+---
+<Base lang={lang} title={c.title} description={c.description} path={path} alternates={alternates({ kind: 'exam', id })} ogType="article" jsonLd={jsonLd}>
+  <section class={`x-hero ruled fam-${e.family}`}>
+    <div class="wrap x-hero-grid">
+      <div>
+        <nav class="crumbs" aria-label="Breadcrumb">
+          <ol>
+            <li><a href={home}>{d.nav.home}</a></li>
+            <li><a href={`${home}#exams`}>{d.exam.crumbExams}</a></li>
+            <li aria-current="page"><bdi>{e.short}</bdi></li>
+          </ol>
+        </nav>
+        <div class="eyebrow x-eyebrow"><span class="fam-dot" aria-hidden="true"></span>{d.family[e.family].tag} · {e.level}</div>
+        <h1>{c.h1}</h1>
+        <p class="lede">{c.lede}</p>
+        <ul class="keyfacts">
+          <li><span>{d.exam.written}</span><b>{d.fx.min(e.written)}</b></li>
+          <li><span>{d.exam.oral}</span><b>{d.fx.min(e.oral, true)}</b></li>
+          <li><span>{d.exam.passMark}</span><b>{d.fx.passShort(e)}</b></li>
+        </ul>
+        <StoreButtons lang={lang} />
+      </div>
+      <div class="x-phone">
+        <div class="phone" role="img" aria-label={`${e.short}: Prüfungsergebnis`}>
+          <div class="screen" aria-hidden="true">
+            <div class="notch"></div>
+            <div class="sbar"><span>15:37</span><span>●●● 100</span></div>
+            <div class="scr on"><ResultCard exam={e} stamped /></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="x-sec">
+    <div class="wrap x-2col">
+      <h2>{d.exam.whoTitle}</h2>
+      <p class="purpose">{c.purpose}</p>
+    </div>
+  </section>
+
+  <section class={`x-sec fam-${e.family}`}>
+    <div class="wrap">
+      <h2>{d.exam.glanceTitle}</h2>
+      <div class="tl">
+        <div class="tl-group">
+          <h3>{d.exam.written} <b>{d.fx.min(e.written)}</b></h3>
+          <ol class="tl-bar" style={`--max:${maxW}`}>
+            {t.written.map((b) => (
+              <li style={`--m:${b.minutes}`}><b lang="de">{b.mods.map((m) => m.de).join(' + ')}</b><span>{d.fx.min(b.minutes, b.approx)}</span></li>
+            ))}
+          </ol>
+        </div>
+        <div class="tl-group">
+          <h3>{d.exam.oral} <b>{d.fx.min(e.oral, true)}</b></h3>
+          <ol class="tl-bar tl-oral" style={`--max:${maxO};--oral-w:${oralPct}%`}>
+            {t.oral.map((b) => (
+              <li class:list={{ prep: b.prep }} style={`--m:${b.minutes}`}>
+                <b lang={b.prep ? undefined : 'de'}>{b.prep ? d.exam.prepLabel : b.mods.map((m) => m.de).join(' + ')}</b>
+                <span>{d.fx.min(b.minutes, b.approx)}</span>
+              </li>
+            ))}
+          </ol>
+        </div>
+        <p class="tl-note">{d.exam.glanceNote}</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="x-sec">
+    <div class="wrap">
+      <h2>{d.exam.modulesTitle}</h2>
+      <p class="lead">{d.exam.modulesLead}</p>
+      <div class="mods">
+        {e.modules.map((m) => {
+          const mc = c.modules[m.key];
+          return (
+            <article class:list={['mcard', { oral: m.oral }]}>
+              <header>
+                <h3 lang="de">{m.de}</h3>
+                {d.moduleName[m.key].toLowerCase() !== m.de.toLowerCase() && <div class="gloss">{d.moduleName[m.key]}</div>}
+                <ul class="stats">{stats(m).map((s) => <li class:list={{ pts: s.pts }}>{s.text}</li>)}</ul>
+              </header>
+              <div>
+                <p class="sum">{mc?.summary}</p>
+                {mc?.teile && (
+                  <ol>
+                    {mc.teile.map((tx, i) => <li><b lang="de">{teilLabel(m, i)}</b><span>{tx}</span></li>)}
+                  </ol>
+                )}
+              </div>
+            </article>
+          );
+        })}
+      </div>
+    </div>
+  </section>
+
+  <section class="x-sec x-score">
+    <div class="wrap x-2col">
+      <div>
+        <h2>{d.exam.scoringTitle}</h2>
+        <p class="rule-note">{c.scoring}</p>
+        {e.id === 'dtz' && <div class="dtz-scale"><DtzScale lang={lang} /></div>}
+      </div>
+      <ScoreTable lang={lang} exam={e} />
+    </div>
+  </section>
+
+  <section class="x-sec">
+    <div class="wrap">
+      <h2>{d.exam.tipsTitle}</h2>
+      <ul class="tips">
+        {c.tips.map((tp) => <li><h3>{tp.t}</h3><p>{tp.d}</p></li>)}
+      </ul>
+    </div>
+  </section>
+
+  <section class="x-sec">
+    <div class="wrap">
+      <h2>{d.exam.faqTitle}</h2>
+      <div class="faq">
+        {faqs.map((f, i) => <details open={i === 0}><summary>{f.q}</summary><p>{f.a}</p></details>)}
+      </div>
+    </div>
+  </section>
+
+  <section class="x-cta" id="download">
+    <div class="wrap">
+      <div>
+        <h2>{d.exam.ctaTitle(e)}</h2>
+        <p>{d.exam.ctaText}</p>
+      </div>
+      <StoreButtons lang={lang} long />
+    </div>
+  </section>
+
+  <section class="x-sec">
+    <div class="wrap">
+      <h2>{d.exam.relatedTitle}</h2>
+      <ul class="related">
+        {relatedExams(e).map((r) => (
+          <li><a class={`g-${r.family}`} href={examPath(lang, r.id)}><b dir="ltr">{r.short}</b><span aria-hidden="true">→</span></a></li>
+        ))}
+      </ul>
+      <p class="checked">{d.exam.checked}</p>
+    </div>
+  </section>
+</Base>

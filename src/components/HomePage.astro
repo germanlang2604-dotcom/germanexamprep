@@ -1,0 +1,181 @@
+---
+import Base from '../layouts/Base.astro';
+import PhoneHome from './PhoneHome.astro';
+import PhoneStory from './PhoneStory.astro';
+import Picker from './Picker.astro';
+import ScoreTable from './ScoreTable.astro';
+import StoreButtons from './StoreButtons.astro';
+import DtzScale from './DtzScale.astro';
+import { EXAMS, FAMILIES, type Family } from '../data/exams';
+import { SITE, STORE, homePath, examPath, type ExamId, type Lang } from '../data/site';
+import { alternates, dict } from '../i18n';
+import { pickerPayload, storySteps } from '../lib/render';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const d = dict(lang);
+const DEFAULT: ExamId = 'goethe-b1';
+const def = EXAMS[DEFAULT];
+const steps = storySteps(def, d);
+const stepOrder = [
+  ['lesen', 'Lesen'], ['hoeren', 'Hören'], ['schreiben', 'Schreiben'], ['sprechen', 'Sprechen'], ['result', 'Ergebnis'],
+] as const;
+const payload = { i18n: { exam: d.picker.exam, level: d.picker.level, soon: d.picker.soon }, exams: pickerPayload(d) };
+
+const levelSub: Record<ExamId, string> = {
+  'telc-a1': 'Start Deutsch 1', 'telc-a2': 'Start Deutsch 2', 'telc-b1': 'Zertifikat Deutsch',
+  dtz: d.levels.integration,
+  'goethe-a1': 'Start Deutsch 1', 'goethe-a2': 'Goethe-Zertifikat A2', 'goethe-b1': 'Goethe-Zertifikat B1',
+};
+const fams = Object.keys(FAMILIES) as Family[];
+
+const path = homePath(lang);
+const jsonLd = [
+  { '@context': 'https://schema.org', '@type': 'WebSite', name: 'German Exam Simulator', url: SITE + path, inLanguage: lang },
+  {
+    '@context': 'https://schema.org', '@type': 'MobileApplication', name: 'German Exam Simulator',
+    operatingSystem: 'Android, iOS', applicationCategory: 'EducationalApplication',
+    description: d.meta.homeDescription, url: SITE + path, installUrl: [STORE.play, STORE.apple],
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  },
+];
+---
+<Base lang={lang} title={d.meta.homeTitle} description={d.meta.homeDescription} path={path} alternates={alternates({ kind: 'home' })} jsonLd={jsonLd}>
+  <section class="hero ruled">
+    <div class="decor notebook nb-1" data-speed="0.25"></div>
+    <div class="decor notebook nb-2" data-speed="0.4"></div>
+    <div class="decor books" data-speed="-0.15"><i></i><i></i><i></i><i></i></div>
+    <div class="decor pencil" data-speed="-0.3"></div>
+    <div class="wrap hero-grid">
+      <div>
+        <div class="eyebrow">{d.hero.eyebrow}</div>
+        <h1>{d.hero.h1a} <em>{d.hero.h1em}</em></h1>
+        <p class="lede">{d.hero.lede}</p>
+        <StoreButtons lang={lang} id="download" />
+        <div class="rating"><span class="stars" aria-hidden="true">★★★★★</span><span>{d.hero.rating}</span><span class="sep" aria-hidden="true"></span><span>{d.hero.free}</span></div>
+      </div>
+      <div class="hero-phone"><div class="tilt"><PhoneHome /></div></div>
+    </div>
+  </section>
+
+  <section class="story ruled" id="how">
+    <div class="wrap">
+      <div class="sec-head">
+        <div class="eyebrow">{d.story.eyebrow}</div>
+        <h2>{d.story.h2}</h2>
+        <p>{d.story.p}</p>
+        <Picker lang={lang} current={DEFAULT} />
+      </div>
+    </div>
+    <div class="wrap story-grid">
+      <div class="stage">
+        <div class="progress" aria-hidden="true">{stepOrder.map((_, i) => <i class:list={{ on: i === 0 }}></i>)}</div>
+        <Picker lang={lang} current={DEFAULT} />
+        <PhoneStory exam={def} />
+      </div>
+      <div class="steps">
+        {stepOrder.map(([k, label], i) => (
+          <article class:list={['step', { on: i === 0 }]} data-step={i}>
+            <div class="step-card">
+              <div class="meta"><span class="num">{String(i + 1).padStart(2, '0')}</span> <span lang="de">{label}</span> <span class="ex-tag" dir="ltr">{def.short}</span></div>
+              <h3>{d.story.heads[k]}</h3>
+              <p class="desc">{steps[k].desc}</p>
+              <ul class="facts">{steps[k].facts.map((f) => <li>{f}</li>)}</ul>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+    <div class="wrap story-note">{d.story.note}</div>
+  </section>
+
+  <section class="exams" id="exams">
+    <div class="wrap">
+      <div class="sec-head">
+        <div class="eyebrow">{d.formats.eyebrow}</div>
+        <h2>{d.formats.h2}</h2>
+        <p>{d.formats.p}</p>
+      </div>
+      <div class="fam-grid">
+        {fams.map((f) => (
+          <article class={`fam g-${f}`}>
+            <div class="tag">{d.family[f].tag}</div>
+            <h3 dir="ltr">{FAMILIES[f].name}</h3>
+            <p>{d.family[f].desc}</p>
+            <div class="lvls">
+              {FAMILIES[f].levels.map((id) => (
+                <a class="lvl" href={examPath(lang, id)}>
+                  <b dir="ltr">{EXAMS[id].level}</b><span>{levelSub[id]}</span><span class="go">{d.formats.guide} ›</span>
+                </a>
+              ))}
+              {f !== 'dtz' && (['B2', 'C1'] as const).map((l) => (
+                <div class="lvl soon"><b dir="ltr">{l}</b><span>{d.levels[l]}</span><span class="go pill-soon">{d.formats.soon}</span></div>
+              ))}
+              {f === 'dtz' && <DtzScale lang={lang} />}
+              {f === 'dtz' && <div class="foot">{d.formats.dtzFoot}</div>}
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="score" id="scoring">
+    <div class="wrap score-grid">
+      <div class="sec-head">
+        <div class="eyebrow">{d.scoring.eyebrow}</div>
+        <h2>{d.scoring.h2}</h2>
+        <p data-score="text">{d.exams[DEFAULT].scoring}</p>
+        <Picker lang={lang} current={DEFAULT} />
+      </div>
+      <ScoreTable lang={lang} exam={def} live />
+    </div>
+  </section>
+
+  <section class="pricing" id="pricing">
+    <div class="wrap">
+      <div class="sec-head">
+        <div class="eyebrow">{d.pricing.eyebrow}</div>
+        <h2>{d.pricing.h2}</h2>
+      </div>
+      <div class="plans">
+        <div class="plan free">
+          <h3>{d.pricing.free}</h3>
+          <div class="price" dir="ltr">$0</div>
+          <div class="per">{d.pricing.freePer}</div>
+          <ul>{d.pricing.freeList.map((x) => <li>{x}</li>)}</ul>
+          <a class="btn btn-line" href="#download">{d.pricing.freeBtn}</a>
+        </div>
+        <div class="plan">
+          <h3>{d.pricing.week}</h3>
+          <div class="price" dir="ltr">$9.99</div>
+          <div class="per">{d.pricing.weekPer}</div>
+          <ul>{d.pricing.weekList.map((x) => <li>{x}</li>)}</ul>
+          <a class="btn btn-ink" href="#download">{d.pricing.weekBtn}</a>
+        </div>
+        <div class="plan best">
+          <span class="flag">{d.pricing.best}</span>
+          <h3>{d.pricing.month}</h3>
+          <div class="price" dir="ltr">$24.99</div>
+          <div class="per">{d.pricing.monthPer}</div>
+          <ul>{d.pricing.monthList.map((x) => <li>{x}</li>)}</ul>
+          <a class="btn" href="#download">{d.pricing.monthBtn}</a>
+        </div>
+      </div>
+      <p class="fine">{d.pricing.fine}</p>
+    </div>
+  </section>
+
+  <section class="final">
+    <div class="wrap">
+      <h2>{d.final.h2a} <em>{d.final.h2em}</em></h2>
+      <p>{d.final.p}</p>
+      <StoreButtons lang={lang} long />
+    </div>
+  </section>
+
+  <script type="application/json" id="exam-data" set:html={JSON.stringify(payload).replace(/</g, '\\u003c')} />
+  <script>
+    import '../scripts/home.ts';
+  </script>
+</Base>

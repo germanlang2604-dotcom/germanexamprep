@@ -1,0 +1,35 @@
+---
+import { LANG_META, homePath, type Lang } from '../data/site';
+import { ACTIVE_LANGS, dict } from '../i18n';
+
+interface Props { lang: Lang; alternates: Partial<Record<Lang, string>> }
+const { lang, alternates } = Astro.props;
+const d = dict(lang);
+const home = homePath(lang);
+---
+<a class="skip" href="#main">{d.nav.skip}</a>
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href={home} dir="ltr">German Exam <b>Simulator</b></a>
+    <nav class="nav-links" aria-label="Main">
+      <a href={`${home}#how`}>{d.nav.how}</a>
+      <a href={`${home}#exams`}>{d.nav.exams}</a>
+      <a href={`${home}#pricing`}>{d.nav.pricing}</a>
+      {ACTIVE_LANGS.length > 1 && (
+        <details class="lang">
+          <summary aria-label={d.nav.language}>{lang}</summary>
+          <ul>
+            {ACTIVE_LANGS.map((l) => (
+              <li>
+                <a href={alternates[l]} lang={l} hreflang={l} aria-current={l === lang ? 'page' : undefined}>
+                  {LANG_META[l].name} <small>{l}</small>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </details>
+      )}
+      <a class="btn btn-ink" href="#download">{d.nav.download}</a>
+    </nav>
+  </div>
+</header>

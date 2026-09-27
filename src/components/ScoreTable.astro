@@ -1,0 +1,18 @@
+---
+import type { Exam } from '../data/exams';
+import type { Lang } from '../data/site';
+import { dict } from '../i18n';
+import { scoreRowsHtml } from '../lib/render';
+
+interface Props { lang: Lang; exam: Exam; live?: boolean }
+const { lang, exam, live = false } = Astro.props;
+const d = dict(lang);
+---
+<div class="sheet">
+  <div class="cap" data-score={live ? 'cap' : undefined} dir="ltr">{exam.name}</div>
+  <table>
+    <thead><tr><th scope="col">{d.scoring.colModule}</th><th scope="col">{d.scoring.colMax}</th><th scope="col">{d.scoring.colPass}</th></tr></thead>
+    <tbody data-score={live ? 'body' : undefined} set:html={scoreRowsHtml(exam, d)} />
+  </table>
+  <p class="src">{d.scoring.source}</p>
+</div>
