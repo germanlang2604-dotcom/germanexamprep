@@ -1,0 +1,748 @@
+<title>German Exam Simulator</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,700;0,800;1,400&family=Roboto:ital,wght@0,400;0,500;0,700;1,400&display=swap">
+<style>
+:root{
+  color-scheme: light;
+  --paper:#E7E0D2; --paper-2:#EFEAE0; --sheet:#F6F3ED; --white:#FFFDF9;
+  --ink:#1E1810; --ink-2:#5A4E3E; --muted:#8C7E69;
+  --rule:rgba(120,95,55,.13); --line:rgba(90,70,40,.16);
+  --amber:#A8620F; --red:#B3302A; --blue:#1565C0; --green:#2A6049; --teal:#1F7A78; --pass:#2D7A52;
+  --serif:"Noto Serif", Georgia, "Times New Roman", serif;
+  --sans:Roboto, system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+  --gutter:clamp(16px, 4vw, 40px);
+  --maxw:1160px;
+  /* story tokens, flipped for the Sprechen chapter */
+  --st-bg:var(--paper); --st-text:var(--ink); --st-sub:var(--ink-2); --st-card:var(--sheet);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 17px/1.6 var(--sans);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--amber);outline-offset:3px;border-radius:6px}
+h1,h2,h3{font-family:var(--serif);font-weight:800;letter-spacing:-.02em;line-height:1.05;text-wrap:balance;margin:0}
+p{margin:0}
+.ruled{background-color:var(--paper);background-image:repeating-linear-gradient(to bottom,transparent 0 35px,var(--rule) 35px 36px)}
+.wrap{max-width:var(--maxw);margin:0 auto;padding-inline:var(--gutter)}
+.eyebrow{font:500 12px/1 var(--sans);letter-spacing:.28em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:14px}
+.eyebrow::before{content:"";width:36px;height:1px;background:currentColor;opacity:.6}
+
+/* nav */
+.nav{position:fixed;inset:0 0 auto;z-index:50;padding-top:env(safe-area-inset-top,0px);background:rgba(231,224,210,.82);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.nav .wrap{display:flex;align-items:center;justify-content:space-between;height:64px;gap:16px}
+.brand{font:800 19px/1 var(--serif);text-decoration:none;letter-spacing:-.01em;white-space:nowrap}
+.brand b{color:var(--red);font-weight:800}
+.nav-links{display:flex;align-items:center;gap:28px;font-size:15px}
+.nav-links a{text-decoration:none;color:var(--ink-2)}
+.nav-links a:hover{color:var(--ink)}
+.lang{font:500 13px/1 var(--sans);border:1px solid var(--line);border-radius:99px;padding:8px 12px;color:var(--ink-2)}
+.btn{display:inline-flex;align-items:center;gap:10px;border-radius:99px;text-decoration:none;font:700 15px/1 var(--sans);letter-spacing:.02em;padding:15px 24px;transition:transform .2s, box-shadow .2s, background .2s}
+.btn svg{width:20px;height:20px;flex:none}
+.btn-ink{background:var(--ink);color:var(--paper-2)}
+.btn-ink:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(30,24,16,.22)}
+.btn-line{border:1.5px solid var(--ink);color:var(--ink)}
+.btn-line:hover{background:var(--ink);color:var(--paper-2)}
+.nav .btn{padding:11px 18px;font-size:14px}
+.nav-links a.btn-ink{color:var(--paper-2)}
+@media (max-width:820px){.nav-links a:not(.btn),.lang{display:none}.nav-links{gap:10px}}
+@media (max-width:420px){.brand{font-size:17px}.nav .btn{padding:10px 14px}}
+
+/* hero */
+.hero{position:relative;overflow:hidden;padding-block:130px 90px}
+.decor{position:absolute;pointer-events:none;will-change:transform}
+.notebook{width:340px;height:230px;background:var(--white);border-radius:6px;box-shadow:0 18px 40px rgba(60,40,10,.14);background-image:repeating-linear-gradient(to bottom,transparent 0 21px,rgba(21,101,192,.22) 21px 22px);background-position:0 30px}
+.notebook::before{content:"";position:absolute;left:22px;top:18px;bottom:18px;width:12px;background:radial-gradient(circle,#bdb3a2 5px,transparent 6px) 0 0/12px 34px repeat-y}
+.nb-1{top:-70px;left:-90px;transform:rotate(-8deg)}
+.nb-2{top:-110px;right:-120px;transform:rotate(11deg)}
+.books{left:-40px;bottom:-30px;display:grid;gap:6px}
+.books i{display:block;height:34px;border-radius:4px 8px 8px 4px;box-shadow:inset 14px 0 0 rgba(0,0,0,.14),0 8px 18px rgba(60,40,10,.12)}
+.books i:nth-child(1){width:250px;background:#D9C9A3;transform:translateX(10px)}
+.books i:nth-child(2){width:230px;background:#3F7C5F}
+.books i:nth-child(3){width:240px;background:#C4A27F;transform:translateX(6px)}
+.books i:nth-child(4){width:220px;background:#7FB2AE}
+.pencil{right:6%;bottom:40px;width:220px;height:14px;border-radius:3px;background:linear-gradient(90deg,#E9B949 0 82%,#E8D2A8 82% 92%,#1E1810 92%);transform:rotate(-24deg);box-shadow:0 8px 16px rgba(60,40,10,.18)}
+.hero-grid{position:relative;display:grid;grid-template-columns:1.15fr .85fr;gap:48px;align-items:center}
+.hero h1{font-size:clamp(44px,7.2vw,96px);margin:22px 0 26px}
+.hero h1 em{font-style:normal;color:var(--red)}
+.hero .lede{font-size:clamp(17px,1.6vw,20px);color:var(--ink-2);max-width:34em}
+.hero-cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:34px}
+.rating{display:flex;align-items:center;gap:10px;margin-top:22px;font-size:14px;color:var(--ink-2)}
+.stars{color:var(--amber);letter-spacing:2px;font-size:16px}
+.hero-phone{display:flex;justify-content:center;position:relative}
+.hero-phone .phone{--pw:clamp(230px,24vw,300px);transform:rotate(3deg)}
+.exam-slip{position:absolute;left:-6%;bottom:12%;z-index:2;background:var(--white);border-radius:12px;padding:14px 18px;box-shadow:0 16px 36px rgba(60,40,10,.18);transform:rotate(-5deg)}
+.exam-slip small{display:block;font:500 11px/1 var(--sans);letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.exam-slip strong{font:800 26px/1 var(--serif);font-variant-numeric:tabular-nums}
+@media (max-width:900px){
+  .hero{padding-block:110px 70px}
+  .hero-grid{grid-template-columns:1fr}
+  .hero-phone{margin-top:10px}
+  .nb-2{display:none}
+  .nb-1{top:-150px;opacity:.7}
+  .books,.pencil{opacity:.5}
+}
+
+/* phone */
+.phone{--pw:300px;position:relative;width:var(--pw);max-width:100%;aspect-ratio:9/19.5;border-radius:calc(var(--pw)*.14);background:#16110b;padding:calc(var(--pw)*.028);box-shadow:0 0 0 1px rgba(255,255,255,.06) inset,0 40px 80px -20px rgba(40,25,5,.45),0 18px 36px -18px rgba(40,25,5,.5);font-size:calc(var(--pw)*.04)}
+.screen{position:relative;height:100%;border-radius:calc(var(--pw)*.115);overflow:hidden;background-color:#E6DFD0;background-image:repeating-linear-gradient(to bottom,transparent 0 2.9em,rgba(120,95,55,.10) 2.9em calc(2.9em + 1px));font-family:var(--sans);color:var(--ink);line-height:1.4}
+.notch{position:absolute;top:.7em;left:50%;transform:translateX(-50%);width:28%;height:1.6em;border-radius:1em;background:#16110b;z-index:5}
+.sbar{display:flex;justify-content:space-between;padding:.9em 1.7em 0;font-size:.85em;font-weight:500;height:2.6em;position:relative;z-index:4}
+.scr{position:absolute;inset:0;padding-top:2.6em;display:flex;flex-direction:column;opacity:0;transform:translateY(3%) scale(.985);transition:opacity .55s ease,transform .55s ease;pointer-events:none}
+.scr.on{opacity:1;transform:none}
+.ah{display:flex;align-items:center;gap:.9em;padding:.6em 1.1em .9em;border-bottom:1px solid rgba(90,70,40,.14);background:rgba(236,230,219,.7)}
+.ah svg{width:1.4em;height:1.4em;flex:none}
+.ah h5{flex:1;margin:0;font:800 1.45em/1.1 var(--serif);text-align:center;font-variant-numeric:tabular-nums;white-space:nowrap}
+.ah .nx{font:700 .95em/1 var(--sans);color:var(--amber);white-space:nowrap}
+.ah h5.l{text-align:left}
+.teile{text-align:center;padding:.9em 0 1em;background:rgba(236,230,219,.7)}
+.teile b{display:block;font:800 1.2em/1 var(--serif);margin-bottom:.6em}
+.teile span{display:inline-grid;place-items:center;width:2.1em;height:2.1em;border-radius:50%;border:1.5px solid #9C8E77;margin:0 .22em;font-weight:700;font-size:.9em;color:var(--ink-2)}
+.teile span.a{background:var(--amber);border-color:var(--amber);color:#fff}
+.sb{flex:1;padding:1em 1.05em;overflow:hidden;display:flex;flex-direction:column;gap:.8em}
+.sb h6{margin:0;font:800 1.2em/1.2 var(--serif)}
+.sb .ins{font-size:.82em;color:var(--ink-2)}
+.card{background:#F3F0EA;border-radius:1em;padding:.95em 1em;box-shadow:0 2px 6px rgba(60,40,10,.07)}
+.card.w{background:#FFFDF9}
+.card .k{font:700 .78em/1.2 var(--sans);color:var(--amber);margin-bottom:.4em;letter-spacing:.02em}
+.card .kt{font:800 .95em/1.25 var(--serif);color:var(--amber);margin-bottom:.3em}
+.card p{font-size:.84em}
+.card h6{font-size:1em;margin-bottom:.35em}
+.done{margin:.4em 1em 1.2em;background:var(--ink);color:#fff;border-radius:1.4em;text-align:center;font:700 .82em/1 var(--sans);letter-spacing:.1em;padding:1.25em 0}
+mark.hl{background:linear-gradient(transparent 55%,rgba(232,178,64,.55) 55%) no-repeat 0 0/0% 100%;color:inherit;transition:background-size 1.4s ease .4s}
+.scr.on mark.hl{background-size:100% 100%}
+.audio{display:flex;align-items:center;gap:.8em}
+.audio svg{width:1.5em;height:1.5em;color:var(--amber);flex:none}
+.track{flex:1;height:.4em;border-radius:1em;background:#E6DFD0;overflow:hidden}
+.track i{display:block;height:100%;width:2%;background:var(--amber);border-radius:1em}
+.audio .t{font-size:.85em;font-weight:500;font-variant-numeric:tabular-nums;letter-spacing:.06em}
+.audio-note{font-size:.72em;font-style:italic;color:var(--muted);margin-top:.5em}
+.rf{display:flex;gap:.7em;margin-top:.6em}
+.rf span{border:1.5px solid;border-radius:.7em;padding:.5em 1.1em;font-weight:500;font-size:.85em;transition:background .3s,color .3s}
+.rf .r{color:var(--pass)} .rf .f{color:var(--red)}
+.rf .f.sel{background:var(--red);color:#fff;border-color:var(--red)}
+.opt{display:flex;align-items:center;gap:.7em;border:1px solid rgba(90,70,40,.18);border-radius:.8em;padding:.55em .7em;margin-top:.5em;font-size:.84em;background:#FFFDF9}
+.opt i{display:grid;place-items:center;width:1.9em;height:1.9em;border-radius:50%;background:#9C8E77;color:#fff;font-style:normal;font-weight:700;flex:none}
+.pts li{font-size:.8em;margin:.25em 0 0 1em}
+.pts li::marker{color:var(--amber)}
+.pts{margin:0;padding:0}
+.ta{min-height:6.5em;font-size:.82em;line-height:1.55;white-space:pre-wrap}
+.ta .caret{display:inline-block;width:1px;height:1.1em;background:var(--ink);vertical-align:-.2em;animation:blink 1s steps(1) infinite}
+.wc{font-size:.72em;color:var(--muted);text-align:right;margin-top:.4em;font-variant-numeric:tabular-nums}
+@keyframes blink{50%{opacity:0}}
+.sub2{display:flex;align-items:center;justify-content:space-between;gap:.6em;padding:.75em 1em;background:rgba(236,230,219,.7);border-bottom:1px solid rgba(90,70,40,.1)}
+.sub2 b{font:800 .95em/1.2 var(--serif);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pill{border:1.5px solid #C99A55;background:rgba(232,190,120,.25);color:var(--amber);border-radius:2em;padding:.35em .8em;font-weight:700;font-size:.9em;font-variant-numeric:tabular-nums;letter-spacing:.05em;white-space:nowrap}
+.talk{margin-top:auto;display:grid;justify-items:center;gap:.6em;padding-bottom:1.4em;min-height:9.6em;position:relative}
+.wave{display:flex;align-items:center;gap:.22em;height:2.6em}
+.wave i{display:block;width:.3em;border-radius:1em;background:var(--amber);height:30%;animation:wv 1s ease-in-out infinite}
+.wave i:nth-child(2n){animation-delay:-.3s}.wave i:nth-child(3n){animation-delay:-.6s}.wave i:nth-child(5n){animation-delay:-.15s}
+@keyframes wv{50%{height:100%}}
+.talk .who{font:400 .9em/1 var(--serif);color:var(--ink-2)}
+.mic{position:relative;width:5.4em;height:5.4em;border-radius:50%;background:var(--ink);color:#fff;display:grid;place-items:center;box-shadow:0 0 0 .45em #8E8577}
+.mic svg{width:1.7em;height:1.7em;margin-top:-.6em}
+.mic span{position:absolute;bottom:.95em;font:700 .72em/1 var(--serif)}
+.mic::after{content:"";position:absolute;inset:-.45em;border-radius:50%;border:2px solid var(--amber);animation:ring 1.6s ease-out infinite;opacity:0}
+@keyframes ring{0%{transform:scale(1);opacity:.9}100%{transform:scale(1.5);opacity:0}}
+.phase{position:absolute;inset:0;display:grid;justify-items:center;align-content:end;gap:.6em;padding-bottom:1.4em;transition:opacity .5s}
+.phase.off{opacity:0}
+/* result */
+.res{padding:1em .9em;overflow:hidden;flex:1}
+.res-card{background:#FBF9F5;border-radius:1.3em;padding:1.2em .9em;text-align:center;position:relative}
+.res-card .brandline{font:700 .72em/1 var(--serif);letter-spacing:.14em}
+.res-card h6{font:800 1.55em/1.1 var(--serif);margin:.5em 0 .25em}
+.res-card .lv{font-size:.8em;color:var(--muted)}
+.res-card .rule{font-size:.64em;font-style:italic;color:var(--muted);margin:.35em 0 .8em}
+.mod{border:1.5px solid rgba(45,122,82,.45);border-radius:.9em;padding:.6em .75em;margin-top:.5em;text-align:left}
+.mod .top{display:flex;justify-content:space-between;align-items:baseline}
+.mod .top b{font:800 .98em/1 var(--serif)}
+.mod .top span{font-weight:700;font-size:.9em;font-variant-numeric:tabular-nums}
+.bar{height:.38em;border-radius:1em;background:#DDD5C6;margin:.45em 0 .4em;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--pass);border-radius:1em;transition:width 1.4s cubic-bezier(.2,.7,.2,1)}
+.mod .st{display:flex;justify-content:space-between;align-items:center;font-size:.72em}
+.mod .st em{color:var(--muted)}
+.badge{background:var(--pass);color:#fff;font:700 .95em/1 var(--sans);letter-spacing:.06em;padding:.4em .7em;border-radius:.5em}
+.subs{border-top:1px solid rgba(90,70,40,.15);margin-top:.5em;padding-top:.35em;font-size:.7em;display:grid;grid-template-columns:1fr auto;gap:.1em .5em;color:var(--ink-2)}
+.subs b{color:var(--ink);font-variant-numeric:tabular-nums}
+.stamp{position:absolute;top:47%;left:50%;z-index:3;font:800 2.1em/1 var(--serif);letter-spacing:.08em;color:var(--pass);border:.14em double var(--pass);border-radius:.25em;padding:.25em .45em;background:rgba(251,249,245,.55);transform:translate(-50%,-50%) rotate(-14deg) scale(2.4);opacity:0;transition:transform .35s cubic-bezier(.3,1.6,.5,1),opacity .2s;mix-blend-mode:multiply}
+.stamp.in{opacity:.92;transform:translate(-50%,-50%) rotate(-14deg) scale(1)}
+/* home screen */
+.home{padding:0 1.1em}
+.home .nbk{height:5.5em;margin:0 -1.1em;background:linear-gradient(170deg,#F7F4EE 0 60%,transparent 60%),repeating-linear-gradient(to bottom,transparent 0 .9em,rgba(21,101,192,.18) .9em calc(.9em + 1px));opacity:.9}
+.home h6{margin:-.4em 0 0;text-align:center;font:800 2.2em/1 var(--serif);letter-spacing:-.02em}
+.home h6 b{display:block;color:var(--red);font-weight:800}
+.home .cy{display:flex;align-items:center;gap:.8em;justify-content:center;font-size:.72em;letter-spacing:.3em;color:#8C7E69;margin:1.8em 0 1.3em}
+.home .cy::before,.home .cy::after{content:"";height:1px;width:2.5em;background:#B9AE9B}
+.fmt{display:flex;align-items:center;gap:.9em;border-radius:1.4em;padding:1em;color:#fff;margin-bottom:1em;position:relative;box-shadow:0 .6em 1.2em -.4em rgba(0,0,0,.35)}
+.fmt .ic{width:3.4em;height:3.4em;border-radius:50%;background:#fff;display:grid;place-items:center;flex:none}
+.fmt .ic svg{width:1.6em;height:1.6em}
+.fmt b{display:block;font:800 1.2em/1.1 var(--serif)}
+.fmt small{font-size:.72em;opacity:.92}
+.fmt .ch{margin-left:auto;width:2.2em;height:2.2em;border-radius:50%;background:rgba(255,255,255,.18);display:grid;place-items:center;color:#F2C46B;font-weight:700;flex:none}
+.fmt .new{position:absolute;top:-.7em;right:.8em;background:#D9502B;border:2px solid #F4C9B5;border-radius:1em;font:700 .65em/1 var(--sans);letter-spacing:.12em;padding:.45em .8em}
+.g-telc{background:linear-gradient(110deg,#B8352B,#7E1D16)}
+.g-dtz{background:linear-gradient(110deg,#2182E3,#0F47A8)}
+.g-goe{background:linear-gradient(110deg,#2C6A4E,#17402D)}
+
+/* sections */
+section{position:relative}
+.sec-head{display:grid;gap:18px;margin-bottom:56px;max-width:760px}
+.sec-head h2{font-size:clamp(34px,5vw,60px)}
+.sec-head p{color:var(--ink-2);font-size:18px;max-width:36em}
+
+/* story */
+.story{background:var(--st-bg);color:var(--st-text);transition:background-color .8s ease,color .8s ease;padding-top:120px}
+.story.dark{--st-bg:#1B150E;--st-text:#F1EBDF;--st-sub:#BDB19C;--st-card:#2A2218;--rule:rgba(255,235,200,.06)}
+.story .sec-head p{color:var(--st-sub)}
+.story-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px}
+.stage{grid-column:2;grid-row:1;position:sticky;top:0;height:100vh;height:100svh;display:grid;place-items:center;padding-top:64px}
+.stage .phone{--pw:min(310px,calc((100vh - 150px)/2.17))}
+.steps{grid-column:1;grid-row:1;position:relative}
+.step{min-height:100vh;min-height:100svh;display:flex;align-items:center}
+.step-card{max-width:30em;opacity:.28;transition:opacity .5s}
+.step.on .step-card{opacity:1}
+.step .meta{display:flex;align-items:center;gap:12px;font:500 13px/1 var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--st-sub);margin-bottom:18px}
+.step .num{font:800 15px/1 var(--serif);color:var(--amber);letter-spacing:0}
+.story.dark .step .num{color:#E3A34A}
+.step h3{font-size:clamp(32px,4.2vw,52px);margin-bottom:18px}
+.step p{color:var(--st-sub);font-size:18px}
+.step .facts{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
+.step .facts span{border:1px solid color-mix(in srgb,var(--st-text) 22%,transparent);border-radius:99px;padding:7px 13px;font-size:14px;color:var(--st-text)}
+.progress{position:absolute;left:0;top:50%;transform:translateY(-50%);display:grid;gap:10px}
+.progress i{width:3px;height:28px;border-radius:3px;background:color-mix(in srgb,var(--st-text) 20%,transparent);transition:background .3s,height .3s}
+.progress i.on{background:var(--amber);height:44px}
+.story-note{padding-block:0 110px;color:var(--st-sub);font-size:14px}
+@media (max-width:900px){
+  .story{padding-top:90px}
+  .story-grid{grid-template-columns:1fr;gap:0}
+  .stage{grid-column:1;align-items:start;padding-top:84px}
+  .stage .phone{--pw:min(60vw,calc((100svh - 330px)/2.17))}
+  .steps{grid-column:1;position:relative;z-index:2}
+  .step{align-items:flex-end;padding-bottom:5svh}
+  .step-card{opacity:1;background:var(--st-card);border-radius:20px;padding:20px 20px 22px;box-shadow:0 20px 40px -18px rgba(30,20,5,.35);transform:translateY(24px);transition:transform .5s,background-color .8s}
+  .step.on .step-card{transform:none}
+  .step h3{font-size:28px;margin-bottom:10px}
+  .step p{font-size:15.5px}
+  .step .facts{display:none}
+  .progress{display:none}
+}
+
+/* exams */
+.exams{padding-block:120px}
+.fam-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.fam{border-radius:28px;color:#fff;padding:30px 28px 26px;display:flex;flex-direction:column;gap:18px;position:relative;overflow:hidden;box-shadow:0 26px 50px -30px rgba(30,20,5,.6)}
+.fam::after{content:"";position:absolute;right:-60px;top:-60px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.08)}
+.fam .tag{font:500 12px/1 var(--sans);letter-spacing:.24em;text-transform:uppercase;opacity:.8}
+.fam h3{font-size:34px}
+.fam p{opacity:.9;font-size:15.5px}
+.lvls{display:grid;gap:8px;margin-top:auto}
+.lvl{display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.1);border-radius:14px;padding:10px 12px;text-decoration:none;transition:background .2s}
+a.lvl:hover{background:rgba(255,255,255,.2)}
+.lvl b{font:800 22px/1 var(--serif);width:42px}
+.lvl span{font-size:14px;flex:1}
+.lvl .go{font-size:12.5px;letter-spacing:.06em;opacity:.85;white-space:nowrap}
+.lvl.soon{background:none;border:1px dashed rgba(255,255,255,.35)}
+.lvl.soon .go{opacity:.7}
+.guides{display:flex;flex-wrap:wrap;gap:8px;font-size:13px}
+.guides a{border:1px solid rgba(255,255,255,.4);border-radius:99px;padding:6px 12px;text-decoration:none}
+.guides a:hover{background:#fff;color:var(--ink)}
+@media (max-width:980px){.fam-grid{grid-template-columns:1fr}}
+
+/* score */
+.score{padding-block:20px 120px}
+.score-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:56px;align-items:center}
+.sheet{background:var(--white);border-radius:24px;padding:30px;box-shadow:0 30px 60px -36px rgba(40,25,5,.5)}
+.sheet table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+.sheet caption{text-align:left;font:800 22px/1.2 var(--serif);margin-bottom:6px}
+.sheet .cap2{font-size:14px;color:var(--muted);font-style:italic;margin-bottom:18px}
+.sheet th,.sheet td{padding:11px 0;border-bottom:1px solid var(--line);text-align:left;font-size:15.5px}
+.sheet th{font:500 12px/1 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.sheet td:last-child,.sheet th:last-child{text-align:right}
+.sheet td.m{font-family:var(--serif);font-weight:800}
+.sheet td.p{color:var(--ink-2);padding-left:18px;font-size:14.5px}
+@media (max-width:900px){.score-grid{grid-template-columns:1fr;gap:36px}.sheet{padding:22px}}
+
+/* pricing */
+.pricing{padding-block:120px;border-top:1px solid var(--line)}
+.plans{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.plan{border-radius:24px;padding:28px;display:flex;flex-direction:column;gap:14px;background:var(--sheet);border:1px solid var(--line)}
+.plan h3{font-size:22px}
+.plan .price{font:800 44px/1 var(--serif);font-variant-numeric:tabular-nums}
+.plan .per{color:var(--muted);font-size:14px;margin-top:-6px}
+.plan ul{list-style:none;padding:0;margin:4px 0 8px;display:grid;gap:8px;font-size:15px}
+.plan li{display:flex;gap:10px}
+.plan li::before{content:"✓";color:var(--pass);font-weight:700}
+.plan .btn{margin-top:auto;justify-content:center}
+.plan.free{background:transparent;border-style:dashed}
+.plan.best{background:var(--ink);color:var(--paper-2);border-color:var(--ink)}
+.plan.best .per{color:#BDB19C}
+.plan.best li::before{color:#8FD0A8}
+.plan.best .btn{background:var(--paper-2);color:var(--ink)}
+.plan .flag{align-self:flex-start;background:var(--amber);color:#fff;border-radius:99px;font:700 11px/1 var(--sans);letter-spacing:.14em;padding:6px 10px}
+.fine{margin-top:22px;color:var(--muted);font-size:14px}
+@media (max-width:900px){.plans{grid-template-columns:1fr}}
+
+/* final */
+.final{padding-block:130px;text-align:center;background:var(--ink);color:var(--paper-2);overflow:hidden}
+.final h2{font-size:clamp(40px,7vw,90px)}
+.final h2 em{font-style:normal;color:#E3A34A}
+.final p{color:#BDB19C;margin:20px auto 36px;max-width:30em;font-size:18px}
+.final .hero-cta{justify-content:center}
+.final .btn-ink{background:var(--paper-2);color:var(--ink)}
+.final .btn-line{border-color:var(--paper-2);color:var(--paper-2)}
+.final .btn-line:hover{background:var(--paper-2);color:var(--ink)}
+footer{background:var(--ink);color:#9E927E;font-size:13.5px;padding-block:0 50px}
+footer .wrap{border-top:1px solid rgba(255,255,255,.1);padding-top:34px;display:grid;gap:18px}
+footer nav,.langs{display:flex;flex-wrap:wrap;gap:8px 22px}
+footer a{text-decoration:none}
+footer a:hover{color:#fff}
+.langs a[aria-current]{color:#fff}
+
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
+</style>
+
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="#top">German Exam <b>Simulator</b></a>
+    <nav class="nav-links" aria-label="Main">
+      <a href="#how">How it works</a>
+      <a href="#exams">Exams</a>
+      <a href="#pricing">Pricing</a>
+      <span class="lang" title="Language">EN</span>
+      <a class="btn btn-ink" href="#download">Download</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+<section class="hero ruled">
+  <div class="decor notebook nb-1" data-speed="0.25"></div>
+  <div class="decor notebook nb-2" data-speed="0.4"></div>
+  <div class="decor books" data-speed="-0.15"><i></i><i></i><i></i><i></i></div>
+  <div class="decor pencil" data-speed="-0.3"></div>
+
+  <div class="wrap hero-grid">
+    <div>
+      <div class="eyebrow">telc · Goethe · DTZ &nbsp;|&nbsp; A1 – B1</div>
+      <h1>Sit the exam before the <em>real exam.</em></h1>
+      <p class="lede">Full mock exams compatible with telc, Goethe and DTZ standards. Lesen, Hören, Schreiben and a spoken exam with an AI partner, timed and scored module by module like the real certificate.</p>
+      <div class="hero-cta" id="download">
+        <a class="btn btn-ink" href="https://play.google.com/store/apps/details?id=com.germanexamsimulator.examapp" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3,20.5V3.5C3,2.91 3.34,2.39 3.84,2.15L13.69,12L3.84,21.85C3.34,21.61 3,21.09 3,20.5M16.81,15.12L6.05,21.34L14.54,12.85L16.81,15.12M20.16,10.81C20.5,11.08 20.75,11.5 20.75,12C20.75,12.5 20.5,12.92 20.16,13.19L17.89,14.5L15.39,12L17.89,9.5L20.16,10.81M6.05,2.66L16.81,8.88L14.54,11.15L6.05,2.66Z"/></svg>
+          Google Play</a>
+        <a class="btn btn-line" href="https://apps.apple.com/app/id6777960267" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.71,19.5C17.88,20.5 17,21.43 15.66,21.5C14.33,21.57 13.86,20.75 12.33,20.75C10.81,20.75 10.28,21.43 9.04,21.57C7.69,21.71 6.68,20.64 5.84,19.64C4.14,17.6 2.84,13.88 4.59,11.35C5.45,10.1 6.85,9.3 8.36,9.27C9.63,9.24 10.82,10.150 11.58,10.15C12.34,10.15 13.79,9.07 15.35,9.23C16.03,9.26 17.63,9.51 18.65,10.97C18.56,11.030 16.57,12.19 16.59,14.62C16.62,17.52 19.07,18.47 19.12,18.49C19.07,18.61 18.76,19.53 18.71,19.5M13,3.5C13.73,2.67 14.94,2.04 15.94,2C16.07,3.17 15.6,4.35 14.9,5.19C14.21,6.04 13.07,6.7 11.95,6.61C11.8,5.46 12.36,4.26 13,3.5Z"/></svg>
+          App Store</a>
+      </div>
+      <div class="rating"><span class="stars" aria-hidden="true">★★★★★</span> 5.0 on the App Store and Google Play · Exam 1 is free</div>
+    </div>
+
+    <div class="hero-phone">
+      <div class="exam-slip" data-speed="-0.08"><small>Restzeit</small><strong id="heroClock">64:59</strong></div>
+      <div class="phone" aria-label="App home screen">
+        <div class="screen">
+          <div class="notch"></div>
+          <div class="sbar"><span>15:26</span><span>●●● 100</span></div>
+          <div class="scr on">
+            <div class="home">
+              <div class="nbk"></div>
+              <h6>German Exam <b>Simulator</b></h6>
+              <div class="cy">CHOOSE YOUR FORMAT</div>
+              <div class="fmt g-telc"><span class="ic"><svg viewBox="0 0 24 24" fill="#B8352B"><path d="M4 4h11l5 5v11H4zM14 4v6h6" fill="none" stroke="#B8352B" stroke-width="2.2"/></svg></span><span><b>Exam Practice</b><small>Compatible with telc standards</small></span><span class="ch">›</span></div>
+              <div class="fmt g-dtz"><span class="ic"><svg viewBox="0 0 24 24" fill="#1565C0"><path d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75zM20.7 7.04a1 1 0 000-1.41l-2.34-2.34a1 1 0 00-1.41 0l-1.83 1.83 3.75 3.75z"/></svg></span><span><b>Exam Practice</b><small>Compatible with DTZ standards</small></span><span class="ch">›</span></div>
+              <div class="fmt g-goe" style="margin-bottom:1.6em"><span class="new">NEW</span><span class="ic"><svg viewBox="0 0 24 24" fill="#2C6A4E"><path d="M21 5c-1.1-.35-2.3-.5-3.5-.5-1.95 0-4.05.4-5.5 1.5-1.45-1.1-3.55-1.5-5.5-1.5S2.45 4.9 1 6v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1zm0 13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V8c1.35-.85 3.8-1.5 5.5-1.5 1.2 0 2.4.15 3.5.5z"/></svg></span><span><b>Exam Practice</b><small>Compatible with Goethe standards</small></span><span class="ch">›</span></div>
+              <p style="font-size:.62em;color:#8C7E69;text-align:center;line-height:1.5">Disclaimer: This app is an independent preparation tool and is not affiliated with, approved by, or endorsed by telc gGmbH, g.a.s.t. e.V. or Goethe-Institut.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="story ruled" id="how">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">One exam, start to finish</div>
+      <h2>Every module. Every Teil. On the clock.</h2>
+      <p>Scroll through a full Goethe-Zertifikat B1 mock exam, the way it runs in the app.</p>
+    </div>
+  </div>
+
+  <div class="wrap story-grid">
+    <div class="stage">
+      <div class="progress" aria-hidden="true"><i class="on"></i><i></i><i></i><i></i><i></i></div>
+      <div class="phone" aria-hidden="true">
+        <div class="screen">
+          <div class="notch"></div>
+          <div class="sbar"><span>15:35</span><span>●●● 100</span></div>
+
+          <!-- Lesen -->
+          <div class="scr on" data-scr="0">
+            <div class="ah"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 12H5M11 5l-7 7 7 7"/></svg><h5>Restzeit: <span class="clock" data-start="3899">64:59</span></h5></div>
+            <div class="teile"><b>Lesen</b><span class="a">1</span><span>2</span><span>3</span><span>4</span><span>5</span></div>
+            <div class="sb">
+              <h6>Lesen Teil 1</h6>
+              <p class="ins">Sie lesen eine E-Mail. Wählen Sie: Sind die Aussagen richtig oder falsch?</p>
+              <div class="card w">
+                <h6>Neuigkeiten aus Leipzig und mein erster Monat!</h6>
+                <p>Hallo Jonas,<br><br>wie geht es dir? Stell dir vor, mein erster Monat in Leipzig ist schon vorbei. <mark class="hl">Du weißt ja, dass ich große Angst vor dem Umzug hatte,</mark> weil ich hier niemanden kannte. Aber ich muss sagen, die Entscheidung war absolut richtig.<br><br>Meine neue Arbeit in der Werbeagentur gefällt mir total gut.</p>
+              </div>
+            </div>
+            <div class="done">FERTIG / NÄCHSTER TEIL</div>
+          </div>
+
+          <!-- Hören -->
+          <div class="scr" data-scr="1">
+            <div class="ah"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 12H5M11 5l-7 7 7 7"/></svg><h5>Restzeit: <span class="clock" data-start="2394">39:54</span></h5></div>
+            <div class="teile"><b>Hören</b><span class="a">1</span><span>2</span><span>3</span><span>4</span></div>
+            <div class="sb">
+              <h6>Hören Teil 1</h6>
+              <p class="ins">Sie hören fünf kurze Texte. Sie hören jeden Text zweimal.</p>
+              <div class="card w">
+                <div class="audio"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9zm13.5 3A4.5 4.5 0 0014 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg><div class="track"><i id="aBar"></i></div><span class="t"><span id="aT">00:01</span> / 07:23</span></div>
+                <div class="audio-note">Sie hören diesen Teil zweimal.</div>
+              </div>
+              <div class="card">
+                <div class="kt">Text 1</div>
+                <p><b>1. Die Praxis ruft an, um einen Termin abzusagen.</b></p>
+                <div class="rf"><span class="r">richtig</span><span class="f" id="falsch">falsch</span></div>
+              </div>
+              <div class="card">
+                <div class="kt">Text 1</div>
+                <p><b>2. Herr Becker soll …</b></p>
+                <div class="opt"><i>A</i>am Donnerstag in die Praxis kommen.</div>
+              </div>
+            </div>
+            <div class="done">FERTIG / NÄCHSTER TEIL</div>
+          </div>
+
+          <!-- Schreiben -->
+          <div class="scr" data-scr="2">
+            <div class="ah"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 12H5M11 5l-7 7 7 7"/></svg><h5>Restzeit: <span class="clock" data-start="3600">60:00</span></h5></div>
+            <div class="teile"><b>Schreiben</b><span class="a">1</span><span>2</span><span>3</span></div>
+            <div class="sb">
+              <h6>Aufgabe 1 · Informelle E-Mail</h6>
+              <div class="card">
+                <div class="k">Schreiben Sie über diese Punkte:</div>
+                <ul class="pts"><li>Wie war das Festival?</li><li>Warum hat er/sie Ihnen gefehlt?</li><li>Vorschlag: gemeinsames Abendessen</li></ul>
+              </div>
+              <div class="card w">
+                <div class="ta"><span id="typed"></span><span class="caret"></span></div>
+                <div class="wc"><span id="wc">0</span> / ca. 80 Wörter</div>
+              </div>
+            </div>
+            <div class="done">FERTIG / NÄCHSTE AUFGABE</div>
+          </div>
+
+          <!-- Sprechen -->
+          <div class="scr" data-scr="3">
+            <div class="ah"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 12H5M11 5l-7 7 7 7"/></svg><h5 class="l">Sprechen Teil 1</h5><span class="nx">Teil 2 ›</span></div>
+            <div class="sub2"><b>Gemeinsam etwas planen</b><span class="pill">⏱ <span class="clock" data-start="298">04:58</span></span></div>
+            <div class="sb">
+              <div class="card w">
+                <h6>Situation</h6>
+                <p>Sie und Ihr Gesprächspartner möchten mit der ganzen Gruppe einen Wochenendausflug in eine andere Stadt organisieren.</p>
+              </div>
+              <div class="card">
+                <div class="k">Leitpunkte:</div>
+                <p>• Wohin und wann genau?<br>• Verkehrsmittel (Zug, Bus, …)?<br>• Übernachtung (Hostel, Hotel, …)?</p>
+              </div>
+              <div class="talk">
+                <div class="phase" id="phPartner"><div class="wave"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="who">Teilnehmer B spricht …</div></div>
+                <div class="phase off" id="phYou"><div class="mic"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 14a3 3 0 003-3V5a3 3 0 00-6 0v6a3 3 0 003 3zm5-3a5 5 0 01-10 0H5a7 7 0 006 6.92V21h2v-3.08A7 7 0 0019 11z"/></svg><span>Sprechen</span></div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Ergebnis -->
+          <div class="scr" data-scr="4">
+            <div class="res">
+              <div class="res-card">
+                <div class="brandline">German Exam Simulator</div>
+                <h6>Prüfungsergebnis</h6>
+                <div class="lv">Goethe-Zertifikat B1</div>
+                <div class="rule">Jedes Modul wird einzeln bewertet · bestanden ab 60 von 100 Punkten</div>
+                <div class="stamp" id="stamp">BESTANDEN</div>
+                <div class="mod"><div class="top"><b>Lesen</b><span><span class="cnt">0</span> / 100</span></div><div class="bar"><i></i></div><div class="st"><em>sehr gut</em><span class="badge">BESTANDEN</span></div></div>
+                <div class="mod"><div class="top"><b>Hören</b><span><span class="cnt">0</span> / 100</span></div><div class="bar"><i></i></div><div class="st"><em>sehr gut</em><span class="badge">BESTANDEN</span></div></div>
+                <div class="mod"><div class="top"><b>Schreiben</b><span><span class="cnt">0</span> / 100</span></div><div class="bar"><i></i></div><div class="st"><em>sehr gut</em><span class="badge">BESTANDEN</span></div></div>
+                <div class="mod"><div class="top"><b>Sprechen</b><span><span class="cnt">0</span> / 100</span></div><div class="bar"><i></i></div><div class="st"><em>sehr gut</em><span class="badge">BESTANDEN</span></div>
+                  <div class="subs"><span>Teil 1</span><b>28 / 28</b><span>Teil 2</span><b>40 / 40</b><span>Teil 3</span><b>16 / 16</b><span>Aussprache</span><b>16 / 16</b></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="steps">
+      <article class="step on" data-step="0">
+        <div class="step-card">
+          <div class="meta"><span class="num">01</span> Lesen</div>
+          <h3>Read against the clock.</h3>
+          <p>Emails, ads, articles and notices in the same task types as the exam. The timer runs exactly as long as it does in the exam hall.</p>
+          <div class="facts"><span>5 Teile</span><span>65 minutes</span><span>richtig / falsch · a b c</span></div>
+        </div>
+      </article>
+      <article class="step" data-step="1">
+        <div class="step-card">
+          <div class="meta"><span class="num">02</span> Hören</div>
+          <h3>Hear it at exam speed.</h3>
+          <p>Announcements, phone messages and conversations, played as often as the real exam allows and not once more.</p>
+          <div class="facts"><span>4 Teile</span><span>40 minutes</span><span>real audio</span></div>
+        </div>
+      </article>
+      <article class="step" data-step="2">
+        <div class="step-card">
+          <div class="meta"><span class="num">03</span> Schreiben</div>
+          <h3>Write the letter they will ask for.</h3>
+          <p>An informal email, a forum post and a formal message, each with its Leitpunkte and a live word count so you learn what 80 words feels like.</p>
+          <div class="facts"><span>3 Aufgaben</span><span>60 minutes</span><span>word counter</span></div>
+        </div>
+      </article>
+      <article class="step" data-step="3">
+        <div class="step-card">
+          <div class="meta"><span class="num">04</span> Sprechen</div>
+          <h3>Speak with a partner who answers back.</h3>
+          <p>Most apps skip the oral exam. Here an AI partner plans a trip with you, gives its own presentation, and asks you questions about yours, the way Teilnehmer B does on exam day.</p>
+          <div class="facts"><span>3 Teile</span><span>about 15 minutes</span><span>AI partner</span></div>
+        </div>
+      </article>
+      <article class="step" data-step="4">
+        <div class="step-card">
+          <div class="meta"><span class="num">05</span> Ergebnis</div>
+          <h3>Scored like the certificate.</h3>
+          <p>Each module is scored on its own, out of 100, and you pass it from 60 points. The breakdown shows which Teil cost you points, so you know what to practise next.</p>
+          <div class="facts"><span>per module</span><span>pass from 60 / 100</span><span>Teil breakdown</span></div>
+        </div>
+      </article>
+    </div>
+  </div>
+  <div class="wrap story-note">Shown: Goethe-Zertifikat B1. telc and DTZ mock exams follow their own formats, timings and scoring.</div>
+</section>
+
+<section class="exams" id="exams">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">Choose your format</div>
+      <h2>Three exam families. One simulator.</h2>
+      <p>Pick the exam you are registered for. Every level includes complete mock exams, and Exam 1 of each format is free.</p>
+    </div>
+    <div class="fam-grid">
+      <article class="fam g-telc">
+        <div class="tag">telc Deutsch</div>
+        <h3>telc</h3>
+        <p>For visas, family reunion, permanent residence and citizenship.</p>
+        <div class="lvls">
+          <a class="lvl" href="/telc-a1-exam-guide/"><b>A1</b><span>Start Deutsch 1</span><span class="go">Guide ›</span></a>
+          <a class="lvl" href="/telc-a2-exam-guide/"><b>A2</b><span>Residence permit</span><span class="go">Guide ›</span></a>
+          <a class="lvl" href="/telc-b1-exam-guide/"><b>B1</b><span>Zertifikat Deutsch</span><span class="go">Guide ›</span></a>
+          <div class="lvl soon"><b>B2</b><span>Upper intermediate</span><span class="go">Coming soon</span></div>
+        </div>
+        <div class="guides"><a href="/telc-a1-pruefung/">A1 auf Deutsch</a><a href="/telc-a2-pruefung/">A2 auf Deutsch</a><a href="/telc-b1-pruefung/">B1 auf Deutsch</a></div>
+      </article>
+      <article class="fam g-dtz">
+        <div class="tag">Deutsch-Test für Zuwanderer</div>
+        <h3>DTZ</h3>
+        <p>The final exam of the integration course, scored as A2 or B1 in a single test.</p>
+        <div class="lvls">
+          <a class="lvl" href="/dtz-exam-guide/"><b>A2–B1</b><span>Integration course</span><span class="go">Guide ›</span></a>
+        </div>
+        <div class="guides"><a href="/dtz-pruefung/">Auf Deutsch</a><a href="/podgotovka-dtz-telc/" lang="ru">По-русски</a></div>
+      </article>
+      <article class="fam g-goe">
+        <div class="tag">Goethe-Zertifikat · New</div>
+        <h3>Goethe</h3>
+        <p>Accepted by embassies and universities worldwide. Each module can be passed on its own.</p>
+        <div class="lvls">
+          <div class="lvl"><b>A1</b><span>Start Deutsch 1</span></div>
+          <div class="lvl"><b>A2</b><span>Goethe-Zertifikat A2</span></div>
+          <div class="lvl"><b>B1</b><span>Goethe-Zertifikat B1</span></div>
+          <div class="lvl soon"><b>B2</b><span>Upper intermediate</span><span class="go">Coming soon</span></div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="score">
+  <div class="wrap score-grid">
+    <div class="sec-head" style="margin-bottom:0">
+      <div class="eyebrow">Honest scoring</div>
+      <h2>Know where the points went.</h2>
+      <p>The result screen uses the certificate's own weighting. In the Goethe B1 oral exam, the presentation in Teil 2 counts more than Teil 1 and Teil 3 combined. Practise accordingly.</p>
+    </div>
+    <div class="sheet">
+      <table>
+        <caption>Goethe-Zertifikat B1 · Sprechen & Schreiben</caption>
+        <tbody>
+          <tr><th scope="col">Module · Teil</th><th scope="col">Max. points</th></tr>
+          <tr><td class="m">Schreiben</td><td><b>100</b></td></tr>
+          <tr><td class="p">Aufgabe 1 · informal email</td><td>40</td></tr>
+          <tr><td class="p">Aufgabe 2 · forum post</td><td>40</td></tr>
+          <tr><td class="p">Aufgabe 3 · formal message</td><td>20</td></tr>
+          <tr><td class="m">Sprechen</td><td><b>100</b></td></tr>
+          <tr><td class="p">Teil 1 · plan something together</td><td>28</td></tr>
+          <tr><td class="p">Teil 2 · presentation</td><td>40</td></tr>
+          <tr><td class="p">Teil 3 · feedback and questions</td><td>16</td></tr>
+          <tr><td class="p">Aussprache · pronunciation</td><td>16</td></tr>
+        </tbody>
+      </table>
+      <p class="cap2" style="margin:16px 0 0">Pass mark for every module: 60 of 100 points.</p>
+    </div>
+  </div>
+</section>
+
+<section class="pricing" id="pricing">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">Pricing</div>
+      <h2>Start free. Upgrade for exam month.</h2>
+    </div>
+    <div class="plans">
+      <div class="plan free">
+        <h3>Free</h3>
+        <div class="price">$0</div>
+        <div class="per">no account needed</div>
+        <ul><li>Exam 1 of every format</li><li>No time limit</li><li>Speaking once per day</li></ul>
+        <a class="btn btn-line" href="#download">Download</a>
+      </div>
+      <div class="plan">
+        <h3>Weekly Pass</h3>
+        <div class="price">$9.99</div>
+        <div class="per">7 days full access</div>
+        <ul><li>All exams unlocked</li><li>Speaking 2× per day</li><li>No long-term commitment</li></ul>
+        <a class="btn btn-ink" href="#download">Get the week</a>
+      </div>
+      <div class="plan best">
+        <span class="flag">BEST VALUE</span>
+        <h3>Monthly Premium</h3>
+        <div class="price">$24.99</div>
+        <div class="per">per month · cancel anytime</div>
+        <ul><li>All exams unlocked</li><li>Speaking 3× per day</li><li>Auto-renews monthly</li></ul>
+        <a class="btn" href="#download">Go monthly</a>
+      </div>
+    </div>
+    <p class="fine">Prices vary by region and are shown in your local currency in the app.</p>
+  </div>
+</section>
+
+<section class="final">
+  <div class="wrap">
+    <h2>Walk in having done it <em>before.</em></h2>
+    <p>Download the app and take your first full mock exam today. Exam 1 is free, no account required.</p>
+    <div class="hero-cta">
+      <a class="btn btn-ink" href="https://play.google.com/store/apps/details?id=com.germanexamsimulator.examapp" target="_blank" rel="noopener">Get it on Google Play</a>
+      <a class="btn btn-line" href="https://apps.apple.com/app/id6777960267" target="_blank" rel="noopener">Download on the App Store</a>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="langs" aria-label="Languages"><a href="#" aria-current="true">English</a><a href="#" lang="de">Deutsch</a><a href="#" lang="tr">Türkçe</a><a href="#" lang="ar">العربية</a><a href="#" lang="uk">Українська</a><a href="#" lang="ru">Русский</a></div>
+    <nav aria-label="Footer"><a href="https://germanlang2604-dotcom.github.io/privacy-policy/">Privacy Policy</a><span>germanlang2604@gmail.com</span></nav>
+    <p>German Exam Simulator is an independent preparation tool and is not affiliated with, approved by, or endorsed by telc gGmbH, g.a.s.t. e.V. or Goethe-Institut. © 2026 GermanLang.</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var fmt = function(s){ s=Math.max(0,Math.round(s)); var m=Math.floor(s/60), r=s%60; return (m<10?'0':'')+m+':'+(r<10?'0':'')+r; };
+
+  /* parallax */
+  var decor = [].slice.call(document.querySelectorAll('[data-speed]'));
+  /* story */
+  var story = document.querySelector('.story');
+  var steps = [].slice.call(document.querySelectorAll('.step'));
+  var screens = [].slice.call(document.querySelectorAll('.scr[data-scr]'));
+  var ticks = [].slice.call(document.querySelectorAll('.progress i'));
+  var active = -1;
+
+  function setActive(i){
+    if(i===active) return;
+    active = i;
+    steps.forEach(function(s,k){ s.classList.toggle('on',k===i); });
+    screens.forEach(function(s,k){ s.classList.toggle('on',k===i); });
+    ticks.forEach(function(t,k){ t.classList.toggle('on',k===i); });
+    story.classList.toggle('dark', i===3);
+    onEnter(i);
+  }
+
+  function onScroll(){
+    var y = window.scrollY, vh = window.innerHeight;
+    if(!reduce) decor.forEach(function(el){
+      var base = el.dataset.base || (el.dataset.base = getComputedStyle(el).transform === 'none' ? '' : getComputedStyle(el).transform);
+      el.style.transform = (base==='none'?'':base) + ' translate3d(0,' + (y*parseFloat(el.dataset.speed)).toFixed(1) + 'px,0)';
+    });
+    var best = 0, bestD = Infinity;
+    steps.forEach(function(s,k){
+      var r = s.getBoundingClientRect(), c = r.top + r.height/2, d = Math.abs(c - vh/2);
+      if(d < bestD){ bestD = d; best = k; }
+    });
+    setActive(best);
+    /* timer runs down as you scroll through the active step */
+    var r = steps[best].getBoundingClientRect();
+    var p = Math.min(1, Math.max(0, (vh - r.top) / (r.height + vh)));
+    var clock = screens[best].querySelector('.clock');
+    if(clock) clock.textContent = fmt(+clock.dataset.start - p*90);
+    var hc = document.getElementById('heroClock');
+    if(hc) hc.textContent = fmt(3899 - Math.min(y, 3000)/12);
+  }
+  var queued = false;
+  window.addEventListener('scroll', function(){ if(!queued){ queued = true; requestAnimationFrame(function(){ queued=false; onScroll(); }); } }, {passive:true});
+  window.addEventListener('resize', onScroll);
+
+  /* per-screen moments */
+  var timers = [];
+  function clear(){ timers.forEach(clearInterval); timers.forEach(clearTimeout); timers = []; }
+  var letter = 'Liebe Anna,\n\nam Samstag war ich auf dem Food-Festival. Die Stimmung war super und das Essen aus Korea war lecker! Leider warst du nicht dabei. Hast du nächsten Samstag Zeit? Wir könnten zusammen essen gehen.\n\nLiebe Grüße\nDeniz';
+
+  function onEnter(i){
+    clear();
+    if(i===1){
+      var bar = document.getElementById('aBar'), t = document.getElementById('aT'), s = 1, f = document.getElementById('falsch');
+      f.classList.remove('sel');
+      if(reduce){ bar.style.width='30%'; f.classList.add('sel'); return; }
+      timers.push(setInterval(function(){ s = (s+3) % 443; bar.style.width = (s/443*100)+'%'; t.textContent = fmt(s); }, 120));
+      timers.push(setTimeout(function(){ f.classList.add('sel'); }, 1600));
+    }
+    if(i===2){
+      var el = document.getElementById('typed'), wc = document.getElementById('wc'), n = 0;
+      var words = function(s){ return (s.trim().match(/\S+/g)||[]).length; };
+      if(reduce){ el.textContent = letter; wc.textContent = words(letter); return; }
+      el.textContent = '';
+      timers.push(setInterval(function(){
+        n = Math.min(letter.length, n + 2);
+        el.textContent = letter.slice(0,n); wc.textContent = words(el.textContent);
+      }, 45));
+    }
+    if(i===3){
+      var a = document.getElementById('phPartner'), b = document.getElementById('phYou'), you = false;
+      var flip = function(){ you = !you; a.classList.toggle('off', you); b.classList.toggle('off', !you); };
+      a.classList.remove('off'); b.classList.add('off');
+      if(!reduce) timers.push(setInterval(flip, 2600));
+    }
+    var scr4 = screens[4], stamp = document.getElementById('stamp');
+    if(i===4){
+      scr4.querySelectorAll('.bar i').forEach(function(b){ b.style.width='100%'; });
+      var cnts = scr4.querySelectorAll('.cnt'), v = reduce ? 100 : 0;
+      var draw = function(){ cnts.forEach(function(c){ c.textContent = v; }); };
+      draw();
+      if(!reduce) timers.push(setInterval(function(){ v = Math.min(100, v + 4); draw(); }, 40));
+      timers.push(setTimeout(function(){ stamp.classList.add('in'); }, reduce ? 0 : 1300));
+    } else {
+      scr4.querySelectorAll('.bar i').forEach(function(b){ b.style.width='0'; });
+      stamp.classList.remove('in');
+    }
+  }
+  onScroll();
+})();
+</script>
