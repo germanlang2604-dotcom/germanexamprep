@@ -64,7 +64,7 @@ const jsonLd = [
           <ol>
             <li><a href={home}>{d.nav.home}</a></li>
             <li><a href={`${home}#exams`}>{d.exam.crumbExams}</a></li>
-            <li aria-current="page" dir="ltr">{e.short}</li>
+            <li aria-current="page"><bdi>{e.short}</bdi></li>
           </ol>
         </nav>
         <div class="eyebrow x-eyebrow"><span class="fam-dot" aria-hidden="true"></span>{d.family[e.family].tag} · {e.level}</div>
