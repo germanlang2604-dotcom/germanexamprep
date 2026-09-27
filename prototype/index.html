@@ -9,18 +9,22 @@
   --paper:#E7E0D2; --paper-2:#EFEAE0; --sheet:#F6F3ED; --white:#FFFDF9;
   --ink:#1E1810; --ink-2:#5A4E3E; --muted:#8C7E69;
   --rule:rgba(120,95,55,.13); --line:rgba(90,70,40,.16);
-  --amber:#A8620F; --red:#B3302A; --blue:#1565C0; --green:#2A6049; --teal:#1F7A78; --pass:#2D7A52;
+  --amber:#A8620F; --red:#B3302A; --blue:#1565C0; --green:#2A6049; --pass:#2D7A52;
   --serif:"Noto Serif", Georgia, "Times New Roman", serif;
   --sans:Roboto, system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
   --gutter:clamp(16px, 4vw, 40px);
   --maxw:1160px;
+  --g-telc:linear-gradient(110deg,#B8352B,#7E1D16);
+  --g-dtz:linear-gradient(110deg,#2182E3,#0F47A8);
+  --g-goe:linear-gradient(110deg,#2C6A4E,#17402D);
   /* story tokens, flipped for the Sprechen chapter */
-  --st-bg:var(--paper); --st-text:var(--ink); --st-sub:var(--ink-2); --st-card:var(--sheet);
+  --st-bg:var(--paper); --st-text:var(--ink); --st-sub:var(--ink-2); --st-card:var(--sheet); --st-chip:rgba(255,253,249,.72); --st-chip-line:var(--line);
 }
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{margin:0;background:var(--paper);color:var(--ink);font:400 17px/1.6 var(--sans);-webkit-font-smoothing:antialiased;overflow-x:hidden}
 a{color:inherit}
+button{font:inherit;color:inherit}
 :focus-visible{outline:3px solid var(--amber);outline-offset:3px;border-radius:6px}
 h1,h2,h3{font-family:var(--serif);font-weight:800;letter-spacing:-.02em;line-height:1.05;text-wrap:balance;margin:0}
 p{margin:0}
@@ -30,27 +34,35 @@ p{margin:0}
 .eyebrow::before{content:"";width:36px;height:1px;background:currentColor;opacity:.6}
 
 /* nav */
-.nav{position:fixed;inset:0 0 auto;z-index:50;padding-top:env(safe-area-inset-top,0px);background:rgba(231,224,210,.82);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.nav{position:fixed;inset:0 0 auto;z-index:50;padding-top:env(safe-area-inset-top,0px);background:rgba(231,224,210,.84);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
 .nav .wrap{display:flex;align-items:center;justify-content:space-between;height:64px;gap:16px}
 .brand{font:800 19px/1 var(--serif);text-decoration:none;letter-spacing:-.01em;white-space:nowrap}
 .brand b{color:var(--red);font-weight:800}
 .nav-links{display:flex;align-items:center;gap:28px;font-size:15px}
-.nav-links a{text-decoration:none;color:var(--ink-2)}
-.nav-links a:hover{color:var(--ink)}
-.lang{font:500 13px/1 var(--sans);border:1px solid var(--line);border-radius:99px;padding:8px 12px;color:var(--ink-2)}
-.btn{display:inline-flex;align-items:center;gap:10px;border-radius:99px;text-decoration:none;font:700 15px/1 var(--sans);letter-spacing:.02em;padding:15px 24px;transition:transform .2s, box-shadow .2s, background .2s}
+.nav-links > a:not(.btn){text-decoration:none;color:var(--ink-2)}
+.nav-links > a:not(.btn):hover{color:var(--ink)}
+.lang{position:relative}
+.lang summary{list-style:none;cursor:pointer;font:500 13px/1 var(--sans);border:1px solid var(--line);border-radius:99px;padding:8px 12px;color:var(--ink-2);display:flex;gap:6px;align-items:center}
+.lang summary::-webkit-details-marker{display:none}
+.lang summary::after{content:"";width:6px;height:6px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:translateY(-2px) rotate(45deg)}
+.lang[open] summary{background:var(--white)}
+.lang ul{position:absolute;right:0;top:calc(100% + 8px);margin:0;padding:6px;list-style:none;background:var(--white);border-radius:14px;box-shadow:0 18px 40px -12px rgba(40,25,5,.35);min-width:170px}
+.lang li a{display:flex;justify-content:space-between;gap:12px;padding:9px 12px;border-radius:9px;text-decoration:none;font-size:14.5px}
+.lang li a:hover{background:var(--paper-2)}
+.lang li a small{color:var(--muted);font-size:12px}
+.lang li a[aria-current]{font-weight:700}
+.btn{display:inline-flex;align-items:center;gap:10px;border-radius:99px;text-decoration:none;font:700 15px/1 var(--sans);letter-spacing:.02em;padding:15px 24px;transition:transform .2s, box-shadow .2s, background .2s, color .2s;cursor:pointer}
 .btn svg{width:20px;height:20px;flex:none}
 .btn-ink{background:var(--ink);color:var(--paper-2)}
 .btn-ink:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(30,24,16,.22)}
 .btn-line{border:1.5px solid var(--ink);color:var(--ink)}
 .btn-line:hover{background:var(--ink);color:var(--paper-2)}
 .nav .btn{padding:11px 18px;font-size:14px}
-.nav-links a.btn-ink{color:var(--paper-2)}
-@media (max-width:820px){.nav-links a:not(.btn),.lang{display:none}.nav-links{gap:10px}}
+@media (max-width:820px){.nav-links > a:not(.btn),.nav .lang{display:none}.nav-links{gap:10px}}
 @media (max-width:420px){.brand{font-size:17px}.nav .btn{padding:10px 14px}}
 
 /* hero */
-.hero{position:relative;overflow:hidden;padding-block:130px 90px}
+.hero{position:relative;overflow:hidden;padding-block:130px 96px}
 .decor{position:absolute;pointer-events:none;will-change:transform}
 .notebook{width:340px;height:230px;background:var(--white);border-radius:6px;box-shadow:0 18px 40px rgba(60,40,10,.14);background-image:repeating-linear-gradient(to bottom,transparent 0 21px,rgba(21,101,192,.22) 21px 22px);background-position:0 30px}
 .notebook::before{content:"";position:absolute;left:22px;top:18px;bottom:18px;width:12px;background:radial-gradient(circle,#bdb3a2 5px,transparent 6px) 0 0/12px 34px repeat-y}
@@ -68,13 +80,14 @@ p{margin:0}
 .hero h1 em{font-style:normal;color:var(--red)}
 .hero .lede{font-size:clamp(17px,1.6vw,20px);color:var(--ink-2);max-width:34em}
 .hero-cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:34px}
-.rating{display:flex;align-items:center;gap:10px;margin-top:22px;font-size:14px;color:var(--ink-2)}
-.stars{color:var(--amber);letter-spacing:2px;font-size:16px}
+.rating{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;margin-top:24px;font-size:14px;color:var(--ink-2)}
+.rating .stars{color:var(--amber);letter-spacing:2px;font-size:16px}
+.rating .sep{width:4px;height:4px;border-radius:50%;background:var(--muted)}
 .hero-phone{display:flex;justify-content:center;position:relative}
-.hero-phone .phone{--pw:clamp(230px,24vw,300px);transform:rotate(3deg)}
-.exam-slip{position:absolute;left:-6%;bottom:12%;z-index:2;background:var(--white);border-radius:12px;padding:14px 18px;box-shadow:0 16px 36px rgba(60,40,10,.18);transform:rotate(-5deg)}
-.exam-slip small{display:block;font:500 11px/1 var(--sans);letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
-.exam-slip strong{font:800 26px/1 var(--serif);font-variant-numeric:tabular-nums}
+.hero-phone .tilt{transform:rotate(3deg)}
+.hero-phone .phone{--pw:clamp(230px,24vw,300px);animation:float 7s ease-in-out infinite}
+@keyframes float{50%{transform:translateY(-10px)}}
+.hero-phone::before{content:"";position:absolute;inset:8% 4% -2%;background:radial-gradient(closest-side,rgba(168,98,15,.20),transparent);filter:blur(10px)}
 @media (max-width:900px){
   .hero{padding-block:110px 70px}
   .hero-grid{grid-template-columns:1fr}
@@ -91,6 +104,8 @@ p{margin:0}
 .sbar{display:flex;justify-content:space-between;padding:.9em 1.7em 0;font-size:.85em;font-weight:500;height:2.6em;position:relative;z-index:4}
 .scr{position:absolute;inset:0;padding-top:2.6em;display:flex;flex-direction:column;opacity:0;transform:translateY(3%) scale(.985);transition:opacity .55s ease,transform .55s ease;pointer-events:none}
 .scr.on{opacity:1;transform:none}
+.screen.swap .scr.on{animation:swap .5s ease}
+@keyframes swap{0%{opacity:.25;transform:scale(.985)}}
 .ah{display:flex;align-items:center;gap:.9em;padding:.6em 1.1em .9em;border-bottom:1px solid rgba(90,70,40,.14);background:rgba(236,230,219,.7)}
 .ah svg{width:1.4em;height:1.4em;flex:none}
 .ah h5{flex:1;margin:0;font:800 1.45em/1.1 var(--serif);text-align:center;font-variant-numeric:tabular-nums;white-space:nowrap}
@@ -110,8 +125,6 @@ p{margin:0}
 .card p{font-size:.84em}
 .card h6{font-size:1em;margin-bottom:.35em}
 .done{margin:.4em 1em 1.2em;background:var(--ink);color:#fff;border-radius:1.4em;text-align:center;font:700 .82em/1 var(--sans);letter-spacing:.1em;padding:1.25em 0}
-mark.hl{background:linear-gradient(transparent 55%,rgba(232,178,64,.55) 55%) no-repeat 0 0/0% 100%;color:inherit;transition:background-size 1.4s ease .4s}
-.scr.on mark.hl{background-size:100% 100%}
 .audio{display:flex;align-items:center;gap:.8em}
 .audio svg{width:1.5em;height:1.5em;color:var(--amber);flex:none}
 .track{flex:1;height:.4em;border-radius:1em;background:#E6DFD0;overflow:hidden}
@@ -124,9 +137,9 @@ mark.hl{background:linear-gradient(transparent 55%,rgba(232,178,64,.55) 55%) no-
 .rf .f.sel{background:var(--red);color:#fff;border-color:var(--red)}
 .opt{display:flex;align-items:center;gap:.7em;border:1px solid rgba(90,70,40,.18);border-radius:.8em;padding:.55em .7em;margin-top:.5em;font-size:.84em;background:#FFFDF9}
 .opt i{display:grid;place-items:center;width:1.9em;height:1.9em;border-radius:50%;background:#9C8E77;color:#fff;font-style:normal;font-weight:700;flex:none}
+.pts{margin:0;padding:0}
 .pts li{font-size:.8em;margin:.25em 0 0 1em}
 .pts li::marker{color:var(--amber)}
-.pts{margin:0;padding:0}
 .ta{min-height:6.5em;font-size:.82em;line-height:1.55;white-space:pre-wrap}
 .ta .caret{display:inline-block;width:1px;height:1.1em;background:var(--ink);vertical-align:-.2em;animation:blink 1s steps(1) infinite}
 .wc{font-size:.72em;color:var(--muted);text-align:right;margin-top:.4em;font-variant-numeric:tabular-nums}
@@ -134,7 +147,7 @@ mark.hl{background:linear-gradient(transparent 55%,rgba(232,178,64,.55) 55%) no-
 .sub2{display:flex;align-items:center;justify-content:space-between;gap:.6em;padding:.75em 1em;background:rgba(236,230,219,.7);border-bottom:1px solid rgba(90,70,40,.1)}
 .sub2 b{font:800 .95em/1.2 var(--serif);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pill{border:1.5px solid #C99A55;background:rgba(232,190,120,.25);color:var(--amber);border-radius:2em;padding:.35em .8em;font-weight:700;font-size:.9em;font-variant-numeric:tabular-nums;letter-spacing:.05em;white-space:nowrap}
-.talk{margin-top:auto;display:grid;justify-items:center;gap:.6em;padding-bottom:1.4em;min-height:9.6em;position:relative}
+.talk{margin-top:auto;position:relative;min-height:9.6em}
 .wave{display:flex;align-items:center;gap:.22em;height:2.6em}
 .wave i{display:block;width:.3em;border-radius:1em;background:var(--amber);height:30%;animation:wv 1s ease-in-out infinite}
 .wave i:nth-child(2n){animation-delay:-.3s}.wave i:nth-child(3n){animation-delay:-.6s}.wave i:nth-child(5n){animation-delay:-.15s}
@@ -147,7 +160,7 @@ mark.hl{background:linear-gradient(transparent 55%,rgba(232,178,64,.55) 55%) no-
 @keyframes ring{0%{transform:scale(1);opacity:.9}100%{transform:scale(1.5);opacity:0}}
 .phase{position:absolute;inset:0;display:grid;justify-items:center;align-content:end;gap:.6em;padding-bottom:1.4em;transition:opacity .5s}
 .phase.off{opacity:0}
-/* result */
+/* result screen */
 .res{padding:1em .9em;overflow:hidden;flex:1}
 .res-card{background:#FBF9F5;border-radius:1.3em;padding:1.2em .9em;text-align:center;position:relative}
 .res-card .brandline{font:700 .72em/1 var(--serif);letter-spacing:.14em}
@@ -159,13 +172,13 @@ mark.hl{background:linear-gradient(transparent 55%,rgba(232,178,64,.55) 55%) no-
 .mod .top b{font:800 .98em/1 var(--serif)}
 .mod .top span{font-weight:700;font-size:.9em;font-variant-numeric:tabular-nums}
 .bar{height:.38em;border-radius:1em;background:#DDD5C6;margin:.45em 0 .4em;overflow:hidden}
-.bar i{display:block;height:100%;width:0;background:var(--pass);border-radius:1em;transition:width 1.4s cubic-bezier(.2,.7,.2,1)}
+.bar i{display:block;height:100%;width:100%;background:var(--pass);border-radius:1em;transition:width 1.4s cubic-bezier(.2,.7,.2,1)}
 .mod .st{display:flex;justify-content:space-between;align-items:center;font-size:.72em}
 .mod .st em{color:var(--muted)}
 .badge{background:var(--pass);color:#fff;font:700 .95em/1 var(--sans);letter-spacing:.06em;padding:.4em .7em;border-radius:.5em}
 .subs{border-top:1px solid rgba(90,70,40,.15);margin-top:.5em;padding-top:.35em;font-size:.7em;display:grid;grid-template-columns:1fr auto;gap:.1em .5em;color:var(--ink-2)}
 .subs b{color:var(--ink);font-variant-numeric:tabular-nums}
-.stamp{position:absolute;top:47%;left:50%;z-index:3;font:800 2.1em/1 var(--serif);letter-spacing:.08em;color:var(--pass);border:.14em double var(--pass);border-radius:.25em;padding:.25em .45em;background:rgba(251,249,245,.55);transform:translate(-50%,-50%) rotate(-14deg) scale(2.4);opacity:0;transition:transform .35s cubic-bezier(.3,1.6,.5,1),opacity .2s;mix-blend-mode:multiply}
+.stamp{position:absolute;top:52%;left:50%;z-index:3;font:800 2.1em/1 var(--serif);letter-spacing:.08em;color:var(--pass);border:.14em double var(--pass);border-radius:.25em;padding:.25em .45em;background:rgba(251,249,245,.55);transform:translate(-50%,-50%) rotate(-14deg) scale(2.4);opacity:0;transition:transform .35s cubic-bezier(.3,1.6,.5,1),opacity .2s;mix-blend-mode:multiply;white-space:nowrap}
 .stamp.in{opacity:.92;transform:translate(-50%,-50%) rotate(-14deg) scale(1)}
 /* home screen */
 .home{padding:0 1.1em}
@@ -174,6 +187,7 @@ mark.hl{background:linear-gradient(transparent 55%,rgba(232,178,64,.55) 55%) no-
 .home h6 b{display:block;color:var(--red);font-weight:800}
 .home .cy{display:flex;align-items:center;gap:.8em;justify-content:center;font-size:.72em;letter-spacing:.3em;color:#8C7E69;margin:1.8em 0 1.3em}
 .home .cy::before,.home .cy::after{content:"";height:1px;width:2.5em;background:#B9AE9B}
+.home .disc{font-size:.62em;color:#8C7E69;text-align:center;line-height:1.5;margin-top:.6em}
 .fmt{display:flex;align-items:center;gap:.9em;border-radius:1.4em;padding:1em;color:#fff;margin-bottom:1em;position:relative;box-shadow:0 .6em 1.2em -.4em rgba(0,0,0,.35)}
 .fmt .ic{width:3.4em;height:3.4em;border-radius:50%;background:#fff;display:grid;place-items:center;flex:none}
 .fmt .ic svg{width:1.6em;height:1.6em}
@@ -181,9 +195,25 @@ mark.hl{background:linear-gradient(transparent 55%,rgba(232,178,64,.55) 55%) no-
 .fmt small{font-size:.72em;opacity:.92}
 .fmt .ch{margin-left:auto;width:2.2em;height:2.2em;border-radius:50%;background:rgba(255,255,255,.18);display:grid;place-items:center;color:#F2C46B;font-weight:700;flex:none}
 .fmt .new{position:absolute;top:-.7em;right:.8em;background:#D9502B;border:2px solid #F4C9B5;border-radius:1em;font:700 .65em/1 var(--sans);letter-spacing:.12em;padding:.45em .8em}
-.g-telc{background:linear-gradient(110deg,#B8352B,#7E1D16)}
-.g-dtz{background:linear-gradient(110deg,#2182E3,#0F47A8)}
-.g-goe{background:linear-gradient(110deg,#2C6A4E,#17402D)}
+.fmt::after{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.22) 50%,transparent 65%) no-repeat -150% 0/60% 100%;animation:shine 7s ease-in-out infinite}
+.fmt:nth-of-type(2)::after{animation-delay:.35s}.fmt:nth-of-type(3)::after{animation-delay:.7s}
+@keyframes shine{0%,70%{background-position:-150% 0}100%{background-position:250% 0}}
+.g-telc{background:var(--g-telc)}
+.g-dtz{background:var(--g-dtz)}
+.g-goe{background:var(--g-goe)}
+
+/* exam picker */
+.picker{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.p-row{display:inline-flex;flex-wrap:wrap;gap:3px;padding:4px;border-radius:99px;background:var(--st-chip);border:1px solid var(--st-chip-line);transition:background .8s,border-color .8s}
+.p-row button{border:0;background:none;color:var(--st-sub);font:600 14px/1 var(--sans);padding:10px 15px;border-radius:99px;cursor:pointer;transition:background .25s,color .25s;display:inline-flex;align-items:center;gap:6px}
+.p-row button:hover:not(:disabled):not([aria-pressed="true"]){color:var(--st-text);background:color-mix(in srgb,var(--st-text) 8%,transparent)}
+.p-fam[aria-pressed="true"]{color:#fff}
+.p-telc[aria-pressed="true"]{background:var(--g-telc)}
+.p-dtz[aria-pressed="true"]{background:var(--g-dtz)}
+.p-goethe[aria-pressed="true"]{background:var(--g-goe)}
+.p-lvl[aria-pressed="true"]{background:var(--st-text);color:var(--st-bg)}
+.p-lvl:disabled{opacity:.5;cursor:not-allowed}
+.p-lvl small{font:500 9.5px/1 var(--sans);letter-spacing:.1em;text-transform:uppercase}
 
 /* sections */
 section{position:relative}
@@ -193,11 +223,14 @@ section{position:relative}
 
 /* story */
 .story{background:var(--st-bg);color:var(--st-text);transition:background-color .8s ease,color .8s ease;padding-top:120px}
-.story.dark{--st-bg:#1B150E;--st-text:#F1EBDF;--st-sub:#BDB19C;--st-card:#2A2218;--rule:rgba(255,235,200,.06)}
+.story.dark{--st-bg:#1B150E;--st-text:#F1EBDF;--st-sub:#BDB19C;--st-card:#2A2218;--st-chip:rgba(255,245,225,.06);--st-chip-line:rgba(255,245,225,.12);--rule:rgba(255,235,200,.06)}
+.story .sec-head{margin-bottom:24px}
 .story .sec-head p{color:var(--st-sub)}
 .story-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px}
-.stage{grid-column:2;grid-row:1;position:sticky;top:0;height:100vh;height:100svh;display:grid;place-items:center;padding-top:64px}
-.stage .phone{--pw:min(310px,calc((100vh - 150px)/2.17))}
+.stage{grid-column:2;grid-row:1;position:sticky;top:0;height:100vh;height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding-top:64px}
+.stage .phone{--pw:min(310px,calc((100vh - 220px)/2.17))}
+.stage .picker{justify-content:center}
+.stage .p-row button{padding:8px 12px;font-size:13px}
 .steps{grid-column:1;grid-row:1;position:relative}
 .step{min-height:100vh;min-height:100svh;display:flex;align-items:center}
 .step-card{max-width:30em;opacity:.28;transition:opacity .5s}
@@ -205,10 +238,12 @@ section{position:relative}
 .step .meta{display:flex;align-items:center;gap:12px;font:500 13px/1 var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--st-sub);margin-bottom:18px}
 .step .num{font:800 15px/1 var(--serif);color:var(--amber);letter-spacing:0}
 .story.dark .step .num{color:#E3A34A}
+.ex-tag{letter-spacing:.04em;text-transform:none;font-weight:600;color:var(--st-text);border:1px solid var(--st-chip-line);border-radius:99px;padding:5px 10px}
 .step h3{font-size:clamp(32px,4.2vw,52px);margin-bottom:18px}
 .step p{color:var(--st-sub);font-size:18px}
 .step .facts{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
 .step .facts span{border:1px solid color-mix(in srgb,var(--st-text) 22%,transparent);border-radius:99px;padding:7px 13px;font-size:14px;color:var(--st-text)}
+.step .facts span:first-child{background:var(--st-text);color:var(--st-bg);border-color:transparent}
 .progress{position:absolute;left:0;top:50%;transform:translateY(-50%);display:grid;gap:10px}
 .progress i{width:3px;height:28px;border-radius:3px;background:color-mix(in srgb,var(--st-text) 20%,transparent);transition:background .3s,height .3s}
 .progress i.on{background:var(--amber);height:44px}
@@ -216,52 +251,69 @@ section{position:relative}
 @media (max-width:900px){
   .story{padding-top:90px}
   .story-grid{grid-template-columns:1fr;gap:0}
-  .stage{grid-column:1;align-items:start;padding-top:84px}
+  .stage{grid-column:1;justify-content:flex-start;padding-top:84px}
+  .stage .picker,.progress{display:none}
   .stage .phone{--pw:min(60vw,calc((100svh - 330px)/2.17))}
-  .steps{grid-column:1;position:relative;z-index:2}
+  .steps{grid-column:1;z-index:2}
   .step{align-items:flex-end;padding-bottom:5svh}
   .step-card{opacity:1;background:var(--st-card);border-radius:20px;padding:20px 20px 22px;box-shadow:0 20px 40px -18px rgba(30,20,5,.35);transform:translateY(24px);transition:transform .5s,background-color .8s}
   .step.on .step-card{transform:none}
+  .step .meta{margin-bottom:12px}
   .step h3{font-size:28px;margin-bottom:10px}
   .step p{font-size:15.5px}
-  .step .facts{display:none}
-  .progress{display:none}
+  .step .facts{margin-top:14px}
+  .step .facts span{font-size:13px;padding:6px 11px}
 }
 
 /* exams */
 .exams{padding-block:120px}
 .fam-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
-.fam{border-radius:28px;color:#fff;padding:30px 28px 26px;display:flex;flex-direction:column;gap:18px;position:relative;overflow:hidden;box-shadow:0 26px 50px -30px rgba(30,20,5,.6)}
-.fam::after{content:"";position:absolute;right:-60px;top:-60px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.08)}
+.fam{border-radius:28px;color:#fff;padding:30px 28px 28px;display:flex;flex-direction:column;gap:18px;position:relative;overflow:hidden;box-shadow:0 26px 50px -30px rgba(30,20,5,.6)}
+.fam::after{content:"";position:absolute;right:-60px;top:-60px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.08);pointer-events:none}
 .fam .tag{font:500 12px/1 var(--sans);letter-spacing:.24em;text-transform:uppercase;opacity:.8}
 .fam h3{font-size:34px}
 .fam p{opacity:.9;font-size:15.5px}
 .lvls{display:grid;gap:8px;margin-top:auto}
-.lvl{display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.1);border-radius:14px;padding:10px 12px;text-decoration:none;transition:background .2s}
+.lvl{display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.1);border-radius:14px;padding:11px 12px;text-decoration:none;transition:background .2s}
 a.lvl:hover{background:rgba(255,255,255,.2)}
-.lvl b{font:800 22px/1 var(--serif);width:42px}
+.lvl b{font:800 22px/1 var(--serif);min-width:42px}
 .lvl span{font-size:14px;flex:1}
-.lvl .go{font-size:12.5px;letter-spacing:.06em;opacity:.85;white-space:nowrap}
-.lvl.soon{background:none;border:1px dashed rgba(255,255,255,.35)}
-.lvl.soon .go{opacity:.7}
-.guides{display:flex;flex-wrap:wrap;gap:8px;font-size:13px}
-.guides a{border:1px solid rgba(255,255,255,.4);border-radius:99px;padding:6px 12px;text-decoration:none}
-.guides a:hover{background:#fff;color:var(--ink)}
+.lvl .go{font-size:12.5px;letter-spacing:.06em;opacity:.85;white-space:nowrap;flex:none}
+.lvl.soon{background:none;border:1px dashed rgba(255,255,255,.35);padding-block:10px}
+.lvl.soon b,.lvl.soon span:not(.go){opacity:.7}
+.lvl .go.pill-soon{font:700 10.5px/1 var(--sans);letter-spacing:.14em;border:1px solid rgba(255,255,255,.4);border-radius:99px;padding:5px 8px;opacity:.9}
+.scale{margin-top:4px;display:grid;gap:8px}
+.scale .lbl{font-size:13px;opacity:.85}
+.scale-bar{display:flex;gap:3px;height:34px}
+.scale-bar i{display:grid;place-items:center;font:700 12px/1 var(--sans);font-style:normal;border-radius:8px;letter-spacing:.04em}
+.scale-bar i:nth-child(1){flex:20;background:rgba(255,255,255,.1)}
+.scale-bar i:nth-child(2){flex:13;background:rgba(255,255,255,.28)}
+.scale-bar i:nth-child(3){flex:13;background:#fff;color:#0F47A8}
+.scale-ticks{position:relative;height:14px;font-size:11.5px;opacity:.8;font-variant-numeric:tabular-nums}
+.scale-ticks span{position:absolute;transform:translateX(-50%)}
+.scale-ticks span:first-child{transform:none}
+.scale-ticks span:last-child{transform:translateX(-100%)}
+.fam .foot{font-size:13.5px;opacity:.85;border-top:1px solid rgba(255,255,255,.18);padding-top:14px}
 @media (max-width:980px){.fam-grid{grid-template-columns:1fr}}
 
 /* score */
 .score{padding-block:20px 120px}
-.score-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:56px;align-items:center}
-.sheet{background:var(--white);border-radius:24px;padding:30px;box-shadow:0 30px 60px -36px rgba(40,25,5,.5)}
+.score-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:56px;align-items:start}
+.score .sec-head{margin-bottom:0;position:sticky;top:110px}
+.score .picker{margin-top:8px}
+.score{--st-text:var(--ink);--st-sub:var(--ink-2);--st-bg:var(--paper)}
+.sheet{background:var(--white);border-radius:24px;padding:30px;box-shadow:0 30px 60px -36px rgba(40,25,5,.5);overflow-x:auto}
+.sheet .cap{font:800 22px/1.2 var(--serif);margin-bottom:18px}
 .sheet table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
-.sheet caption{text-align:left;font:800 22px/1.2 var(--serif);margin-bottom:6px}
-.sheet .cap2{font-size:14px;color:var(--muted);font-style:italic;margin-bottom:18px}
-.sheet th,.sheet td{padding:11px 0;border-bottom:1px solid var(--line);text-align:left;font-size:15.5px}
-.sheet th{font:500 12px/1 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
-.sheet td:last-child,.sheet th:last-child{text-align:right}
-.sheet td.m{font-family:var(--serif);font-weight:800}
+.sheet th,.sheet td{padding:11px 0;border-bottom:1px solid var(--line);text-align:left;font-size:15.5px;vertical-align:baseline}
+.sheet th{font:500 12px/1.3 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.sheet td + td,.sheet th + th{text-align:right;padding-left:14px}
+.sheet td.m{font-family:var(--serif);font-weight:800;padding-top:18px}
 .sheet td.p{color:var(--ink-2);padding-left:18px;font-size:14.5px}
-@media (max-width:900px){.score-grid{grid-template-columns:1fr;gap:36px}.sheet{padding:22px}}
+.sheet tr.sub td{border-bottom-style:dotted}
+.sheet td.ps{color:var(--pass);font-weight:700}
+.sheet .src{margin-top:16px;font-size:13px;color:var(--muted)}
+@media (max-width:900px){.score-grid{grid-template-columns:1fr;gap:32px}.score .sec-head{position:static}.sheet{padding:22px}}
 
 /* pricing */
 .pricing{padding-block:120px;border-top:1px solid var(--line)}
@@ -312,7 +364,17 @@ footer a:hover{color:#fff}
       <a href="#how">How it works</a>
       <a href="#exams">Exams</a>
       <a href="#pricing">Pricing</a>
-      <span class="lang" title="Language">EN</span>
+      <details class="lang">
+        <summary aria-label="Language">EN</summary>
+        <ul>
+          <li><a href="#" aria-current="true">English <small>EN</small></a></li>
+          <li><a href="#" lang="de">Deutsch <small>DE</small></a></li>
+          <li><a href="#" lang="tr">Türkçe <small>TR</small></a></li>
+          <li><a href="#" lang="ar">العربية <small>AR</small></a></li>
+          <li><a href="#" lang="uk">Українська <small>UK</small></a></li>
+          <li><a href="#" lang="ru">Русский <small>RU</small></a></li>
+        </ul>
+      </details>
       <a class="btn btn-ink" href="#download">Download</a>
     </nav>
   </div>
@@ -329,20 +391,20 @@ footer a:hover{color:#fff}
     <div>
       <div class="eyebrow">telc · Goethe · DTZ &nbsp;|&nbsp; A1 – B1</div>
       <h1>Sit the exam before the <em>real exam.</em></h1>
-      <p class="lede">Full mock exams compatible with telc, Goethe and DTZ standards. Lesen, Hören, Schreiben and a spoken exam with an AI partner, timed and scored module by module like the real certificate.</p>
+      <p class="lede">Full mock exams compatible with telc, Goethe and DTZ standards. Lesen, Hören, Schreiben and a spoken exam with an AI partner, timed and scored the way the real certificate is.</p>
       <div class="hero-cta" id="download">
         <a class="btn btn-ink" href="https://play.google.com/store/apps/details?id=com.germanexamsimulator.examapp" target="_blank" rel="noopener">
           <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3,20.5V3.5C3,2.91 3.34,2.39 3.84,2.15L13.69,12L3.84,21.85C3.34,21.61 3,21.09 3,20.5M16.81,15.12L6.05,21.34L14.54,12.85L16.81,15.12M20.16,10.81C20.5,11.08 20.75,11.5 20.75,12C20.75,12.5 20.5,12.92 20.16,13.19L17.89,14.5L15.39,12L17.89,9.5L20.16,10.81M6.05,2.66L16.81,8.88L14.54,11.15L6.05,2.66Z"/></svg>
           Google Play</a>
         <a class="btn btn-line" href="https://apps.apple.com/app/id6777960267" target="_blank" rel="noopener">
-          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.71,19.5C17.88,20.5 17,21.43 15.66,21.5C14.33,21.57 13.86,20.75 12.33,20.75C10.81,20.75 10.28,21.43 9.04,21.57C7.69,21.71 6.68,20.64 5.84,19.64C4.14,17.6 2.84,13.88 4.59,11.35C5.45,10.1 6.85,9.3 8.36,9.27C9.63,9.24 10.82,10.150 11.58,10.15C12.34,10.15 13.79,9.07 15.35,9.23C16.03,9.26 17.63,9.51 18.65,10.97C18.56,11.030 16.57,12.19 16.59,14.62C16.62,17.52 19.07,18.47 19.12,18.49C19.07,18.61 18.76,19.53 18.71,19.5M13,3.5C13.73,2.67 14.94,2.04 15.94,2C16.07,3.17 15.6,4.35 14.9,5.19C14.21,6.04 13.07,6.7 11.95,6.61C11.8,5.46 12.36,4.26 13,3.5Z"/></svg>
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.71,19.5C17.88,20.5 17,21.43 15.66,21.5C14.33,21.57 13.86,20.75 12.33,20.75C10.81,20.75 10.28,21.43 9.04,21.57C7.69,21.71 6.68,20.64 5.84,19.64C4.14,17.6 2.84,13.88 4.59,11.35C5.45,10.1 6.85,9.3 8.36,9.27C9.63,9.24 10.82,10.15 11.58,10.15C12.34,10.15 13.79,9.07 15.35,9.23C16.03,9.26 17.63,9.51 18.65,10.97C18.56,11.03 16.57,12.19 16.59,14.62C16.62,17.52 19.07,18.47 19.12,18.49C19.07,18.61 18.76,19.53 18.71,19.5M13,3.5C13.73,2.67 14.94,2.04 15.94,2C16.07,3.17 15.6,4.35 14.9,5.19C14.21,6.04 13.07,6.7 11.95,6.61C11.8,5.46 12.36,4.26 13,3.5Z"/></svg>
           App Store</a>
       </div>
-      <div class="rating"><span class="stars" aria-hidden="true">★★★★★</span> 5.0 on the App Store and Google Play · Exam 1 is free</div>
+      <div class="rating"><span class="stars" aria-hidden="true">★★★★★</span><span>5.0 on the App Store and Google Play</span><span class="sep" aria-hidden="true"></span><span>Exam 1 is free</span></div>
     </div>
 
     <div class="hero-phone">
-      <div class="exam-slip" data-speed="-0.08"><small>Restzeit</small><strong id="heroClock">64:59</strong></div>
+      <div class="tilt">
       <div class="phone" aria-label="App home screen">
         <div class="screen">
           <div class="notch"></div>
@@ -352,13 +414,14 @@ footer a:hover{color:#fff}
               <div class="nbk"></div>
               <h6>German Exam <b>Simulator</b></h6>
               <div class="cy">CHOOSE YOUR FORMAT</div>
-              <div class="fmt g-telc"><span class="ic"><svg viewBox="0 0 24 24" fill="#B8352B"><path d="M4 4h11l5 5v11H4zM14 4v6h6" fill="none" stroke="#B8352B" stroke-width="2.2"/></svg></span><span><b>Exam Practice</b><small>Compatible with telc standards</small></span><span class="ch">›</span></div>
+              <div class="fmt g-telc"><span class="ic"><svg viewBox="0 0 24 24"><path d="M4 4h11l5 5v11H4zM14 4v6h6" fill="none" stroke="#B8352B" stroke-width="2.2"/></svg></span><span><b>Exam Practice</b><small>Compatible with telc standards</small></span><span class="ch">›</span></div>
               <div class="fmt g-dtz"><span class="ic"><svg viewBox="0 0 24 24" fill="#1565C0"><path d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75zM20.7 7.04a1 1 0 000-1.41l-2.34-2.34a1 1 0 00-1.41 0l-1.83 1.83 3.75 3.75z"/></svg></span><span><b>Exam Practice</b><small>Compatible with DTZ standards</small></span><span class="ch">›</span></div>
-              <div class="fmt g-goe" style="margin-bottom:1.6em"><span class="new">NEW</span><span class="ic"><svg viewBox="0 0 24 24" fill="#2C6A4E"><path d="M21 5c-1.1-.35-2.3-.5-3.5-.5-1.95 0-4.05.4-5.5 1.5-1.45-1.1-3.55-1.5-5.5-1.5S2.45 4.9 1 6v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1zm0 13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V8c1.35-.85 3.8-1.5 5.5-1.5 1.2 0 2.4.15 3.5.5z"/></svg></span><span><b>Exam Practice</b><small>Compatible with Goethe standards</small></span><span class="ch">›</span></div>
-              <p style="font-size:.62em;color:#8C7E69;text-align:center;line-height:1.5">Disclaimer: This app is an independent preparation tool and is not affiliated with, approved by, or endorsed by telc gGmbH, g.a.s.t. e.V. or Goethe-Institut.</p>
+              <div class="fmt g-goe"><span class="new">NEW</span><span class="ic"><svg viewBox="0 0 24 24" fill="#2C6A4E"><path d="M21 5c-1.1-.35-2.3-.5-3.5-.5-1.95 0-4.05.4-5.5 1.5-1.45-1.1-3.550-1.5-5.5-1.5S2.45 4.9 1 6v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1zm0 13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V8c1.35-.85 3.8-1.5 5.5-1.5 1.2 0 2.4.15 3.5.5z"/></svg></span><span><b>Exam Practice</b><small>Compatible with Goethe standards</small></span><span class="ch">›</span></div>
+              <p class="disc">Disclaimer: This app is an independent preparation tool and is not affiliated with, approved by, or endorsed by telc gGmbH, g.a.s.t. e.V. or Goethe-Institut.</p>
             </div>
           </div>
         </div>
+      </div>
       </div>
     </div>
   </div>
@@ -369,28 +432,30 @@ footer a:hover{color:#fff}
     <div class="sec-head">
       <div class="eyebrow">One exam, start to finish</div>
       <h2>Every module. Every Teil. On the clock.</h2>
-      <p>Scroll through a full Goethe-Zertifikat B1 mock exam, the way it runs in the app.</p>
+      <p>Pick your exam, then scroll. Parts, timings and scoring change with the exam you choose.</p>
+      <div class="picker" data-picker></div>
     </div>
   </div>
 
   <div class="wrap story-grid">
     <div class="stage">
       <div class="progress" aria-hidden="true"><i class="on"></i><i></i><i></i><i></i><i></i></div>
+      <div class="picker" data-picker></div>
       <div class="phone" aria-hidden="true">
-        <div class="screen">
+        <div class="screen" id="storyScreen">
           <div class="notch"></div>
           <div class="sbar"><span>15:35</span><span>●●● 100</span></div>
 
           <!-- Lesen -->
           <div class="scr on" data-scr="0">
-            <div class="ah"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 12H5M11 5l-7 7 7 7"/></svg><h5>Restzeit: <span class="clock" data-start="3899">64:59</span></h5></div>
-            <div class="teile"><b>Lesen</b><span class="a">1</span><span>2</span><span>3</span><span>4</span><span>5</span></div>
+            <div class="ah"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 12H5M11 5l-7 7 7 7"/></svg><h5>Restzeit: <span class="clock" data-mod>64:59</span></h5></div>
+            <div class="teile" data-label="Lesen"><b>Lesen</b><span class="a">1</span><span>2</span><span>3</span><span>4</span><span>5</span></div>
             <div class="sb">
               <h6>Lesen Teil 1</h6>
               <p class="ins">Sie lesen eine E-Mail. Wählen Sie: Sind die Aussagen richtig oder falsch?</p>
               <div class="card w">
                 <h6>Neuigkeiten aus Leipzig und mein erster Monat!</h6>
-                <p>Hallo Jonas,<br><br>wie geht es dir? Stell dir vor, mein erster Monat in Leipzig ist schon vorbei. <mark class="hl">Du weißt ja, dass ich große Angst vor dem Umzug hatte,</mark> weil ich hier niemanden kannte. Aber ich muss sagen, die Entscheidung war absolut richtig.<br><br>Meine neue Arbeit in der Werbeagentur gefällt mir total gut.</p>
+                <p>Hallo Jonas,<br><br>wie geht es dir? Stell dir vor, mein erster Monat in Leipzig ist schon vorbei. Du weißt ja, dass ich große Angst vor dem Umzug hatte, weil ich hier niemanden kannte. Aber ich muss sagen, die Entscheidung war absolut richtig.<br><br>Meine neue Arbeit in der Werbeagentur gefällt mir total gut.</p>
               </div>
             </div>
             <div class="done">FERTIG / NÄCHSTER TEIL</div>
@@ -398,13 +463,13 @@ footer a:hover{color:#fff}
 
           <!-- Hören -->
           <div class="scr" data-scr="1">
-            <div class="ah"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 12H5M11 5l-7 7 7 7"/></svg><h5>Restzeit: <span class="clock" data-start="2394">39:54</span></h5></div>
-            <div class="teile"><b>Hören</b><span class="a">1</span><span>2</span><span>3</span><span>4</span></div>
+            <div class="ah"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 12H5M11 5l-7 7 7 7"/></svg><h5>Restzeit: <span class="clock" data-mod>39:59</span></h5></div>
+            <div class="teile" data-label="Hören"><b>Hören</b><span class="a">1</span><span>2</span><span>3</span><span>4</span></div>
             <div class="sb">
               <h6>Hören Teil 1</h6>
               <p class="ins">Sie hören fünf kurze Texte. Sie hören jeden Text zweimal.</p>
               <div class="card w">
-                <div class="audio"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9zm13.5 3A4.5 4.5 0 0014 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg><div class="track"><i id="aBar"></i></div><span class="t"><span id="aT">00:01</span> / 07:23</span></div>
+                <div class="audio"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9zm13.5 3A4.5 4.5 0 0014 7.970v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg><div class="track"><i id="aBar"></i></div><span class="t"><span id="aT">00:01</span> / 07:23</span></div>
                 <div class="audio-note">Sie hören diesen Teil zweimal.</div>
               </div>
               <div class="card">
@@ -423,17 +488,17 @@ footer a:hover{color:#fff}
 
           <!-- Schreiben -->
           <div class="scr" data-scr="2">
-            <div class="ah"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 12H5M11 5l-7 7 7 7"/></svg><h5>Restzeit: <span class="clock" data-start="3600">60:00</span></h5></div>
-            <div class="teile"><b>Schreiben</b><span class="a">1</span><span>2</span><span>3</span></div>
+            <div class="ah"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 12H5M11 5l-7 7 7 7"/></svg><h5>Restzeit: <span class="clock" data-mod>59:59</span></h5></div>
+            <div class="teile" data-label="Schreiben"><b>Schreiben</b><span class="a">1</span><span>2</span><span>3</span></div>
             <div class="sb">
-              <h6>Aufgabe 1 · Informelle E-Mail</h6>
+              <h6>Aufgabe 1 · E-Mail an eine Freundin</h6>
               <div class="card">
                 <div class="k">Schreiben Sie über diese Punkte:</div>
-                <ul class="pts"><li>Wie war das Festival?</li><li>Warum hat er/sie Ihnen gefehlt?</li><li>Vorschlag: gemeinsames Abendessen</li></ul>
+                <ul class="pts"><li>Wie war das Festival?</li><li>Warum hat sie Ihnen gefehlt?</li><li>Vorschlag: gemeinsames Abendessen</li></ul>
               </div>
               <div class="card w">
                 <div class="ta"><span id="typed"></span><span class="caret"></span></div>
-                <div class="wc"><span id="wc">0</span> / ca. 80 Wörter</div>
+                <div class="wc"><span id="wc">0</span> Wörter</div>
               </div>
             </div>
             <div class="done">FERTIG / NÄCHSTE AUFGABE</div>
@@ -465,14 +530,10 @@ footer a:hover{color:#fff}
               <div class="res-card">
                 <div class="brandline">German Exam Simulator</div>
                 <h6>Prüfungsergebnis</h6>
-                <div class="lv">Goethe-Zertifikat B1</div>
-                <div class="rule">Jedes Modul wird einzeln bewertet · bestanden ab 60 von 100 Punkten</div>
+                <div class="lv" id="resLv">Goethe-Zertifikat B1</div>
+                <div class="rule" id="resRule">Jedes Modul wird einzeln bewertet · bestanden ab 60 von 100 Punkten</div>
                 <div class="stamp" id="stamp">BESTANDEN</div>
-                <div class="mod"><div class="top"><b>Lesen</b><span><span class="cnt">0</span> / 100</span></div><div class="bar"><i></i></div><div class="st"><em>sehr gut</em><span class="badge">BESTANDEN</span></div></div>
-                <div class="mod"><div class="top"><b>Hören</b><span><span class="cnt">0</span> / 100</span></div><div class="bar"><i></i></div><div class="st"><em>sehr gut</em><span class="badge">BESTANDEN</span></div></div>
-                <div class="mod"><div class="top"><b>Schreiben</b><span><span class="cnt">0</span> / 100</span></div><div class="bar"><i></i></div><div class="st"><em>sehr gut</em><span class="badge">BESTANDEN</span></div></div>
-                <div class="mod"><div class="top"><b>Sprechen</b><span><span class="cnt">0</span> / 100</span></div><div class="bar"><i></i></div><div class="st"><em>sehr gut</em><span class="badge">BESTANDEN</span></div>
-                  <div class="subs"><span>Teil 1</span><b>28 / 28</b><span>Teil 2</span><b>40 / 40</b><span>Teil 3</span><b>16 / 16</b><span>Aussprache</span><b>16 / 16</b></div></div>
+                <div id="resRows"></div>
               </div>
             </div>
           </div>
@@ -483,54 +544,54 @@ footer a:hover{color:#fff}
     <div class="steps">
       <article class="step on" data-step="0">
         <div class="step-card">
-          <div class="meta"><span class="num">01</span> Lesen</div>
+          <div class="meta"><span class="num">01</span> Lesen <span class="ex-tag">Goethe B1</span></div>
           <h3>Read against the clock.</h3>
-          <p>Emails, ads, articles and notices in the same task types as the exam. The timer runs exactly as long as it does in the exam hall.</p>
-          <div class="facts"><span>5 Teile</span><span>65 minutes</span><span>richtig / falsch · a b c</span></div>
+          <p class="desc">A blog post, press articles, ads, readers' opinions and house rules.</p>
+          <div class="facts"><span>5 Teile</span><span>65 min</span></div>
         </div>
       </article>
       <article class="step" data-step="1">
         <div class="step-card">
-          <div class="meta"><span class="num">02</span> Hören</div>
+          <div class="meta"><span class="num">02</span> Hören <span class="ex-tag">Goethe B1</span></div>
           <h3>Hear it at exam speed.</h3>
-          <p>Announcements, phone messages and conversations, played as often as the real exam allows and not once more.</p>
-          <div class="facts"><span>4 Teile</span><span>40 minutes</span><span>real audio</span></div>
+          <p class="desc">Short announcements, a talk, a conversation and a radio discussion.</p>
+          <div class="facts"><span>4 Teile</span><span>about 40 min</span></div>
         </div>
       </article>
       <article class="step" data-step="2">
         <div class="step-card">
-          <div class="meta"><span class="num">03</span> Schreiben</div>
+          <div class="meta"><span class="num">03</span> Schreiben <span class="ex-tag">Goethe B1</span></div>
           <h3>Write the letter they will ask for.</h3>
-          <p>An informal email, a forum post and a formal message, each with its Leitpunkte and a live word count so you learn what 80 words feels like.</p>
-          <div class="facts"><span>3 Aufgaben</span><span>60 minutes</span><span>word counter</span></div>
+          <p class="desc">An email to a friend, a forum post with your opinion and a short formal email.</p>
+          <div class="facts"><span>3 Aufgaben</span><span>60 min</span></div>
         </div>
       </article>
       <article class="step" data-step="3">
         <div class="step-card">
-          <div class="meta"><span class="num">04</span> Sprechen</div>
+          <div class="meta"><span class="num">04</span> Sprechen <span class="ex-tag">Goethe B1</span></div>
           <h3>Speak with a partner who answers back.</h3>
-          <p>Most apps skip the oral exam. Here an AI partner plans a trip with you, gives its own presentation, and asks you questions about yours, the way Teilnehmer B does on exam day.</p>
-          <div class="facts"><span>3 Teile</span><span>about 15 minutes</span><span>AI partner</span></div>
+          <p class="desc">Most apps skip the oral exam. Here an AI partner takes the other candidate's seat.</p>
+          <div class="facts"><span>3 Teile</span><span>about 15 min</span></div>
         </div>
       </article>
       <article class="step" data-step="4">
         <div class="step-card">
-          <div class="meta"><span class="num">05</span> Ergebnis</div>
+          <div class="meta"><span class="num">05</span> Ergebnis <span class="ex-tag">Goethe B1</span></div>
           <h3>Scored like the certificate.</h3>
-          <p>Each module is scored on its own, out of 100, and you pass it from 60 points. The breakdown shows which Teil cost you points, so you know what to practise next.</p>
-          <div class="facts"><span>per module</span><span>pass from 60 / 100</span><span>Teil breakdown</span></div>
+          <p class="desc">Each module is scored on its own, out of 100, and you pass it from 60 points.</p>
+          <div class="facts"><span>4 modules × 100</span><span>pass from 60 each</span></div>
         </div>
       </article>
     </div>
   </div>
-  <div class="wrap story-note">Shown: Goethe-Zertifikat B1. telc and DTZ mock exams follow their own formats, timings and scoring.</div>
+  <div class="wrap story-note">The phone shows sample tasks from the app. Parts, timings and scoring follow the published format of the exam you pick.</div>
 </section>
 
 <section class="exams" id="exams">
   <div class="wrap">
     <div class="sec-head">
       <div class="eyebrow">Choose your format</div>
-      <h2>Three exam families. One simulator.</h2>
+      <h2>Three exam formats. One simulator.</h2>
       <p>Pick the exam you are registered for. Every level includes complete mock exams, and Exam 1 of each format is free.</p>
     </div>
     <div class="fam-grid">
@@ -540,60 +601,57 @@ footer a:hover{color:#fff}
         <p>For visas, family reunion, permanent residence and citizenship.</p>
         <div class="lvls">
           <a class="lvl" href="/telc-a1-exam-guide/"><b>A1</b><span>Start Deutsch 1</span><span class="go">Guide ›</span></a>
-          <a class="lvl" href="/telc-a2-exam-guide/"><b>A2</b><span>Residence permit</span><span class="go">Guide ›</span></a>
+          <a class="lvl" href="/telc-a2-exam-guide/"><b>A2</b><span>Start Deutsch 2</span><span class="go">Guide ›</span></a>
           <a class="lvl" href="/telc-b1-exam-guide/"><b>B1</b><span>Zertifikat Deutsch</span><span class="go">Guide ›</span></a>
-          <div class="lvl soon"><b>B2</b><span>Upper intermediate</span><span class="go">Coming soon</span></div>
+          <div class="lvl soon"><b>B2</b><span>Upper intermediate</span><span class="go pill-soon">SOON</span></div>
+          <div class="lvl soon"><b>C1</b><span>Advanced</span><span class="go pill-soon">SOON</span></div>
         </div>
-        <div class="guides"><a href="/telc-a1-pruefung/">A1 auf Deutsch</a><a href="/telc-a2-pruefung/">A2 auf Deutsch</a><a href="/telc-b1-pruefung/">B1 auf Deutsch</a></div>
       </article>
       <article class="fam g-dtz">
         <div class="tag">Deutsch-Test für Zuwanderer</div>
         <h3>DTZ</h3>
-        <p>The final exam of the integration course, scored as A2 or B1 in a single test.</p>
+        <p>The final exam of the integration course. One test, and the result is A2 or B1.</p>
         <div class="lvls">
           <a class="lvl" href="/dtz-exam-guide/"><b>A2–B1</b><span>Integration course</span><span class="go">Guide ›</span></a>
+          <div class="scale" role="img" aria-label="Hören and Lesen together: 0 to 19 points is below A2, 20 to 32 is A2, 33 to 45 is B1">
+            <div class="lbl">Hören + Lesen, 45 points</div>
+            <div class="scale-bar"><i>below A2</i><i>A2</i><i>B1</i></div>
+            <div class="scale-ticks"><span style="left:0">0</span><span style="left:43.5%">20</span><span style="left:71.7%">33</span><span style="left:100%">45</span></div>
+          </div>
+          <div class="foot">Sprechen decides: without B1 in the oral exam, the certificate says A2.</div>
         </div>
-        <div class="guides"><a href="/dtz-pruefung/">Auf Deutsch</a><a href="/podgotovka-dtz-telc/" lang="ru">По-русски</a></div>
       </article>
       <article class="fam g-goe">
         <div class="tag">Goethe-Zertifikat · New</div>
         <h3>Goethe</h3>
-        <p>Accepted by embassies and universities worldwide. Each module can be passed on its own.</p>
+        <p>Accepted by embassies and universities worldwide. B1 modules can be passed one at a time.</p>
         <div class="lvls">
           <div class="lvl"><b>A1</b><span>Start Deutsch 1</span></div>
           <div class="lvl"><b>A2</b><span>Goethe-Zertifikat A2</span></div>
           <div class="lvl"><b>B1</b><span>Goethe-Zertifikat B1</span></div>
-          <div class="lvl soon"><b>B2</b><span>Upper intermediate</span><span class="go">Coming soon</span></div>
+          <div class="lvl soon"><b>B2</b><span>Upper intermediate</span><span class="go pill-soon">SOON</span></div>
+          <div class="lvl soon"><b>C1</b><span>Advanced</span><span class="go pill-soon">SOON</span></div>
         </div>
       </article>
     </div>
   </div>
 </section>
 
-<section class="score">
+<section class="score" id="scoring">
   <div class="wrap score-grid">
-    <div class="sec-head" style="margin-bottom:0">
+    <div class="sec-head">
       <div class="eyebrow">Honest scoring</div>
       <h2>Know where the points went.</h2>
-      <p>The result screen uses the certificate's own weighting. In the Goethe B1 oral exam, the presentation in Teil 2 counts more than Teil 1 and Teil 3 combined. Practise accordingly.</p>
+      <p id="scoreInsight">Each module is scored on its own, out of 100, and you pass it from 60 points.</p>
+      <div class="picker" data-picker></div>
     </div>
     <div class="sheet">
+      <div class="cap" id="scoreCap">Goethe-Zertifikat B1</div>
       <table>
-        <caption>Goethe-Zertifikat B1 · Sprechen & Schreiben</caption>
-        <tbody>
-          <tr><th scope="col">Module · Teil</th><th scope="col">Max. points</th></tr>
-          <tr><td class="m">Schreiben</td><td><b>100</b></td></tr>
-          <tr><td class="p">Aufgabe 1 · informal email</td><td>40</td></tr>
-          <tr><td class="p">Aufgabe 2 · forum post</td><td>40</td></tr>
-          <tr><td class="p">Aufgabe 3 · formal message</td><td>20</td></tr>
-          <tr><td class="m">Sprechen</td><td><b>100</b></td></tr>
-          <tr><td class="p">Teil 1 · plan something together</td><td>28</td></tr>
-          <tr><td class="p">Teil 2 · presentation</td><td>40</td></tr>
-          <tr><td class="p">Teil 3 · feedback and questions</td><td>16</td></tr>
-          <tr><td class="p">Aussprache · pronunciation</td><td>16</td></tr>
-        </tbody>
+        <thead><tr><th scope="col">Module · Teil</th><th scope="col">Max. points</th><th scope="col">Pass from</th></tr></thead>
+        <tbody id="scoreBody"></tbody>
       </table>
-      <p class="cap2" style="margin:16px 0 0">Pass mark for every module: 60 of 100 points.</p>
+      <p class="src">Based on the published exam regulations of telc, the Goethe-Institut and g.a.s.t., checked in 2026.</p>
     </div>
   </div>
 </section>
@@ -657,15 +715,176 @@ footer a:hover{color:#fff}
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var fmt = function(s){ s=Math.max(0,Math.round(s)); var m=Math.floor(s/60), r=s%60; return (m<10?'0':'')+m+':'+(r<10?'0':'')+r; };
 
-  /* parallax */
-  var decor = [].slice.call(document.querySelectorAll('[data-speed]'));
-  /* story */
+  /* ---------- exam data (published formats, checked 2026) ----------
+     m: [circles on phone, timer minutes, fact chips...] for L(esen) H(ören) S(chreiben) P (Sprechen)
+     res: result rows. max/pass in points; sub = [label, max]; ph:0 hides subs on the phone */
+  var SD1 = { L:[3,25,'3 Teile','about 25 min'], H:[3,20,'3 Teile','about 20 min'], S:[2,20,'2 Teile','about 20 min'], P:[3,15,'3 Teile','about 15 min','small group'] };
+  var SD1d = {
+    L:'Signs, short notes, emails and ads. You answer richtig or falsch, or pick a or b.',
+    H:'Short everyday conversations, announcements and phone messages.',
+    S:'Fill in a form, then write a short personal message.',
+    P:'Introduce yourself, ask and answer questions about everyday things, and make simple requests.'
+  };
+  var EX = {
+    'telc-a1': { short:'telc A1', name:'telc Deutsch A1 · Start Deutsch 1', m:SD1, d:SD1d,
+      ruleDe:'Bestanden ab 36 von 60 Punkten',
+      rule:'Only the total counts: 36 of 60 points passes, so a strong Sprechen can make up for a weaker Lesen.',
+      rf:['60 points in total','pass from 36'],
+      res:[{n:'Gesamt',en:'Total',max:60,pass:36,sub:[['Hören',15],['Lesen',15],['Schreiben',15],['Sprechen',15]]}] },
+    'telc-a2': { short:'telc A2', name:'telc Deutsch A2 · Start Deutsch 2',
+      m:{ L:[3,50,'3 Teile','50 min with Schreiben'], H:[3,20,'3 Teile','about 20 min'], S:[2,50,'2 Teile','50 min with Lesen'], P:[3,15,'3 Teile','about 15 min','with a partner'] },
+      d:{ L:'Three parts with five tasks each: notices, ads and short everyday texts.',
+          H:'Phone messages, radio announcements and one longer conversation.',
+          S:'Fill in a form and write a short personal message.',
+          P:'Talk about yourself, ask and answer questions, and plan something with your partner.' },
+      ruleDe:'Bestanden mit 60 % schriftlich und 60 % mündlich',
+      rule:'Written and oral count separately: you need 27 of 45 points in the written part and 9 of 15 in Sprechen.',
+      rf:['45 written + 15 oral','60 % in each part'],
+      res:[{n:'Schriftlich',en:'Written part',max:45,pass:27,sub:[['Hören',15],['Lesen',15],['Schreiben',15]]},{n:'Sprechen',max:15,pass:9}] },
+    'telc-b1': { short:'telc B1', name:'telc Deutsch B1 · Zertifikat Deutsch',
+      m:{ L:[5,90,'3 Teile + 2 Sprachbausteine','90 min'], H:[3,30,'3 Teile','about 30 min'], S:[1,30,'1 letter','30 min'], P:[3,15,'3 Teile','about 15 min','+ 20 min preparation'] },
+      d:{ L:'Leseverstehen and Sprachbausteine: match headlines, read for detail, pick the right ad, then fill grammar and vocabulary gaps.',
+          H:'Radio, announcements and conversations, tested for gist, detail and specific information.',
+          S:'One informal or semi-formal letter that covers four Leitpunkte.',
+          P:'Get to know your partner, discuss a topic, then plan something together.' },
+      ruleDe:'Bestanden ab 135 von 225 (schriftlich) und 45 von 75 (mündlich)',
+      rule:'Written and oral are scored separately: 135 of 225 and 45 of 75. In the oral exam, Teil 1 is worth 15 points while Teil 2 and Teil 3 are worth 30 each.',
+      rf:['225 written + 75 oral','60 % in each part'],
+      res:[{n:'Schriftlich',en:'Written part',max:225,pass:135,sub:[['Leseverstehen',75],['Sprachbausteine',30],['Hörverstehen',75],['Schriftl. Ausdruck',45]]},{n:'Mündlich',en:'Oral part',max:75,pass:45,sub:[['Teil 1',15],['Teil 2',30],['Teil 3',30]]}] },
+    'dtz': { short:'DTZ', name:'Deutsch-Test für Zuwanderer (A2–B1)', badge:'B1', stamp:'NIVEAU B1', pw:'B1 ab',
+      m:{ L:[5,45,'5 Teile','45 min'], H:[4,25,'4 Teile','25 min'], S:[1,30,'1 task, A or B','30 min'], P:[3,16,'3 Teile','about 16 min','with a partner'] },
+      d:{ L:'Signs, ads, emails and newspaper texts, plus a text with gaps to fill.',
+          H:'Announcements, radio, phone messages and everyday conversations.',
+          S:'Pick task A or B and write a letter or email that covers all four points.',
+          P:'Introduce yourself, talk about a picture and your own experience, then plan something with your partner.' },
+      ruleDe:'B1 mit Sprechen B1 und einem weiteren Teil auf B1',
+      rule:'One test, two levels. You get B1 when Sprechen reaches B1 and either Hören + Lesen or Schreiben reaches B1 too.',
+      rf:['result A2 or B1','Sprechen must be B1'],
+      res:[{n:'Hören + Lesen',max:45,pass:33,pt:'A2 20 · B1 33',sub:[['Hören',20],['Lesen',25]]},{n:'Schreiben',max:20,pass:15,pt:'A2 7 · B1 15'},{n:'Sprechen',lvl:'B1',pt:'must be B1'}] },
+    'goethe-a1': { short:'Goethe A1', name:'Goethe-Zertifikat A1 · Start Deutsch 1', m:SD1, d:SD1d,
+      ruleDe:'Bestanden ab 60 von 100 Punkten',
+      rule:'Only the total counts: 60 of 100 points passes. Start Deutsch 1 uses the same tasks at telc and the Goethe-Institut.',
+      rf:['100 points in total','pass from 60'],
+      res:[{n:'Gesamt',en:'Total',max:100,pass:60,sub:[['Hören',25],['Lesen',25],['Schreiben',25],['Sprechen',25]]}] },
+    'goethe-a2': { short:'Goethe A2', name:'Goethe-Zertifikat A2',
+      m:{ L:[4,30,'4 Teile','30 min'], H:[4,30,'4 Teile','about 30 min'], S:[2,30,'2 Teile','30 min'], P:[3,15,'3 Teile','about 15 min','with a partner'] },
+      d:{ L:'An email, notices, and articles from newspapers and the internet.',
+          H:'Radio programmes, conversations, answering-machine messages and announcements.',
+          S:'A personal message to a friend and a semi-formal message, for example to a teacher.',
+          P:'Ask your partner questions, talk about your life, then plan something together.' },
+      ruleDe:'Bestanden ab 60 von 100 · mind. 45 schriftlich und 15 mündlich',
+      rule:'Each skill is worth 25 points. You need 45 of 75 in the written part and 15 of 25 in Sprechen, so a strong written part cannot rescue a weak oral exam.',
+      rf:['4 × 25 points','45 written + 15 oral'],
+      res:[{n:'Schriftlich',en:'Written part',max:75,pass:45,sub:[['Lesen',25],['Hören',25],['Schreiben',25]]},{n:'Sprechen',max:25,pass:15}] },
+    'goethe-b1': { short:'Goethe B1', name:'Goethe-Zertifikat B1',
+      m:{ L:[5,65,'5 Teile','65 min'], H:[4,40,'4 Teile','about 40 min'], S:[3,60,'3 Aufgaben','60 min'], P:[3,15,'3 Teile','about 15 min','+ 15 min preparation'] },
+      d:{ L:'A blog post, press articles, ads, readers’ opinions and house rules.',
+          H:'Short announcements, a talk, a conversation and a radio discussion.',
+          S:'An email to a friend, a forum post with your opinion and a short formal email.',
+          P:'Plan something with your partner, give a short presentation, then react to your partner’s.' },
+      ruleDe:'Jedes Modul wird einzeln bewertet · bestanden ab 60 von 100 Punkten',
+      rule:'Each module is scored on its own, out of 100, and you pass it from 60 points. In Sprechen, the presentation in Teil 2 is worth 40 of the 100 points.',
+      rf:['4 modules × 100','pass from 60 each'],
+      res:[{n:'Lesen',max:100,pass:60},{n:'Hören',max:100,pass:60},{n:'Schreiben',max:100,pass:60,ph:0,sub:[['Aufgabe 1',40],['Aufgabe 2',40],['Aufgabe 3',20]]},{n:'Sprechen',max:100,pass:60,sub:[['Teil 1',28],['Teil 2',40],['Teil 3',16],['Aussprache',16]]}] }
+  };
+  var FAM = { telc:{name:'telc', lv:['A1','A2','B1']}, dtz:{name:'DTZ', lv:['A2–B1']}, goethe:{name:'Goethe', lv:['A1','A2','B1']} };
+  var state = { fam:'goethe', lvl:'B1' };
+  var key = function(){ return state.fam==='dtz' ? 'dtz' : state.fam + '-' + state.lvl.toLowerCase(); };
+
   var story = document.querySelector('.story');
+  var screenEl = document.getElementById('storyScreen');
   var steps = [].slice.call(document.querySelectorAll('.step'));
   var screens = [].slice.call(document.querySelectorAll('.scr[data-scr]'));
   var ticks = [].slice.call(document.querySelectorAll('.progress i'));
+  var decor = [].slice.call(document.querySelectorAll('[data-speed]'));
   var active = -1;
 
+  /* ---------- picker ---------- */
+  function renderPickers(){
+    [].forEach.call(document.querySelectorAll('[data-picker]'), function(root){
+      var h = '<div class="p-row" role="group" aria-label="Exam">';
+      Object.keys(FAM).forEach(function(f){
+        h += '<button type="button" class="p-fam p-'+f+'" data-fam="'+f+'" aria-pressed="'+(state.fam===f)+'">'+FAM[f].name+'</button>';
+      });
+      h += '</div><div class="p-row" role="group" aria-label="Level">';
+      FAM[state.fam].lv.forEach(function(l){
+        h += '<button type="button" class="p-lvl" data-lvl="'+l+'" aria-pressed="'+(state.lvl===l)+'">'+l+'</button>';
+      });
+      if(state.fam!=='dtz') ['B2','C1'].forEach(function(l){
+        h += '<button type="button" class="p-lvl" disabled aria-label="'+l+', coming soon">'+l+' <small>soon</small></button>';
+      });
+      root.innerHTML = h + '</div>';
+    });
+  }
+  document.addEventListener('click', function(e){
+    var b = e.target.closest('[data-picker] button');
+    if(!b || b.disabled) return;
+    var root = b.closest('[data-picker]'), sel;
+    if(b.dataset.fam){
+      if(b.dataset.fam===state.fam) return;
+      state.fam = b.dataset.fam;
+      var lv = FAM[state.fam].lv;
+      state.lvl = lv.indexOf(state.lvl) >= 0 ? state.lvl : lv[lv.length-1];
+      sel = '[data-fam="'+state.fam+'"]';
+    } else {
+      if(b.dataset.lvl===state.lvl) return;
+      state.lvl = b.dataset.lvl;
+      sel = '[data-lvl="'+state.lvl+'"]';
+    }
+    update(true);
+    var nb = root.querySelector(sel); if(nb) nb.focus();
+  });
+
+  /* ---------- render exam ---------- */
+  function chips(list){ return list.map(function(f){ return '<span>'+f+'</span>'; }).join(''); }
+  function update(animate){
+    var ex = EX[key()];
+    renderPickers();
+    ['L','H','S','P'].forEach(function(m,i){
+      var mm = ex.m[m], st = steps[i];
+      st.querySelector('.ex-tag').textContent = ex.short;
+      st.querySelector('.desc').textContent = (m==='P' ? 'Most apps skip the oral exam. Here an AI partner takes the other candidate’s seat. ' : '') + ex.d[m];
+      st.querySelector('.facts').innerHTML = chips(mm.slice(2));
+      var t = screens[i].querySelector('.teile');
+      if(t){
+        var h = '<b>'+t.dataset.label+'</b>';
+        for(var k=1;k<=mm[0];k++) h += '<span'+(k===1?' class="a"':'')+'>'+k+'</span>';
+        t.innerHTML = h;
+      }
+      var c = screens[i].querySelector('.clock[data-mod]');
+      if(c){ c.dataset.start = mm[1]*60 - 1; c.textContent = fmt(mm[1]*60 - 1); }
+    });
+    steps[4].querySelector('.ex-tag').textContent = ex.short;
+    steps[4].querySelector('.desc').textContent = ex.rule;
+    steps[4].querySelector('.facts').innerHTML = chips(ex.rf);
+
+    /* phone result */
+    document.getElementById('resLv').textContent = ex.name;
+    document.getElementById('resRule').textContent = ex.ruleDe;
+    document.getElementById('stamp').textContent = ex.stamp || 'BESTANDEN';
+    document.getElementById('resRows').innerHTML = ex.res.map(function(r){
+      var val = r.max ? '<span class="cnt" data-max="'+r.max+'">'+r.max+'</span> / '+r.max : r.lvl;
+      var pass = r.max ? (ex.pw || 'bestanden ab')+' '+r.pass : 'Niveau '+r.lvl;
+      var subs = (r.sub && r.ph!==0) ? '<div class="subs">'+r.sub.map(function(s){ return '<span>'+s[0]+'</span><b>'+s[1]+' / '+s[1]+'</b>'; }).join('')+'</div>' : '';
+      return '<div class="mod"><div class="top"><b>'+r.n+'</b><span>'+val+'</span></div><div class="bar"><i></i></div><div class="st"><em>'+pass+'</em><span class="badge">'+(ex.badge || 'BESTANDEN')+'</span></div>'+subs+'</div>';
+    }).join('');
+
+    /* scoring table */
+    document.getElementById('scoreCap').textContent = ex.name;
+    document.getElementById('scoreInsight').textContent = ex.rule;
+    var rows = '';
+    ex.res.forEach(function(r){
+      rows += '<tr><td class="m">'+(r.en || r.n)+'</td><td><b>'+(r.max || '—')+'</b></td><td class="ps">'+(r.pt || r.pass)+'</td></tr>';
+      (r.sub || []).forEach(function(s){ rows += '<tr class="sub"><td class="p">'+s[0]+'</td><td>'+s[1]+'</td><td></td></tr>'; });
+    });
+    document.getElementById('scoreBody').innerHTML = rows;
+
+    if(animate && !reduce){ screenEl.classList.remove('swap'); void screenEl.offsetWidth; screenEl.classList.add('swap'); }
+    if(active >= 0){ var a = active; active = -1; setActive(a); }
+    onScroll();
+  }
+
+  /* ---------- scroll story ---------- */
   function setActive(i){
     if(i===active) return;
     active = i;
@@ -675,74 +894,78 @@ footer a:hover{color:#fff}
     story.classList.toggle('dark', i===3);
     onEnter(i);
   }
-
   function onScroll(){
     var y = window.scrollY, vh = window.innerHeight;
     if(!reduce) decor.forEach(function(el){
-      var base = el.dataset.base || (el.dataset.base = getComputedStyle(el).transform === 'none' ? '' : getComputedStyle(el).transform);
-      el.style.transform = (base==='none'?'':base) + ' translate3d(0,' + (y*parseFloat(el.dataset.speed)).toFixed(1) + 'px,0)';
+      if(el.dataset.base===undefined){ var t = getComputedStyle(el).transform; el.dataset.base = t==='none' ? '' : t; }
+      el.style.transform = el.dataset.base + ' translate3d(0,' + (y*parseFloat(el.dataset.speed)).toFixed(1) + 'px,0)';
     });
     var best = 0, bestD = Infinity;
     steps.forEach(function(s,k){
-      var r = s.getBoundingClientRect(), c = r.top + r.height/2, d = Math.abs(c - vh/2);
+      var r = s.getBoundingClientRect(), d = Math.abs(r.top + r.height/2 - vh/2);
       if(d < bestD){ bestD = d; best = k; }
     });
     setActive(best);
-    /* timer runs down as you scroll through the active step */
+    /* the exam clock runs down while you scroll through a step */
     var r = steps[best].getBoundingClientRect();
     var p = Math.min(1, Math.max(0, (vh - r.top) / (r.height + vh)));
     var clock = screens[best].querySelector('.clock');
     if(clock) clock.textContent = fmt(+clock.dataset.start - p*90);
-    var hc = document.getElementById('heroClock');
-    if(hc) hc.textContent = fmt(3899 - Math.min(y, 3000)/12);
   }
   var queued = false;
-  window.addEventListener('scroll', function(){ if(!queued){ queued = true; requestAnimationFrame(function(){ queued=false; onScroll(); }); } }, {passive:true});
+  window.addEventListener('scroll', function(){ if(!queued){ queued = true; requestAnimationFrame(function(){ queued = false; onScroll(); }); } }, {passive:true});
   window.addEventListener('resize', onScroll);
 
-  /* per-screen moments */
+  /* ---------- per-screen moments ---------- */
   var timers = [];
-  function clear(){ timers.forEach(clearInterval); timers.forEach(clearTimeout); timers = []; }
+  function clear(){ timers.forEach(function(t){ clearInterval(t); clearTimeout(t); }); timers = []; }
   var letter = 'Liebe Anna,\n\nam Samstag war ich auf dem Food-Festival. Die Stimmung war super und das Essen aus Korea war lecker! Leider warst du nicht dabei. Hast du nächsten Samstag Zeit? Wir könnten zusammen essen gehen.\n\nLiebe Grüße\nDeniz';
+  var words = function(s){ return (s.trim().match(/\S+/g) || []).length; };
 
   function onEnter(i){
     clear();
     if(i===1){
       var bar = document.getElementById('aBar'), t = document.getElementById('aT'), s = 1, f = document.getElementById('falsch');
       f.classList.remove('sel');
-      if(reduce){ bar.style.width='30%'; f.classList.add('sel'); return; }
-      timers.push(setInterval(function(){ s = (s+3) % 443; bar.style.width = (s/443*100)+'%'; t.textContent = fmt(s); }, 120));
-      timers.push(setTimeout(function(){ f.classList.add('sel'); }, 1600));
+      if(reduce){ bar.style.width = '30%'; f.classList.add('sel'); }
+      else {
+        timers.push(setInterval(function(){ s = (s + 3) % 443; bar.style.width = (s/443*100)+'%'; t.textContent = fmt(s); }, 120));
+        timers.push(setTimeout(function(){ f.classList.add('sel'); }, 1600));
+      }
     }
     if(i===2){
       var el = document.getElementById('typed'), wc = document.getElementById('wc'), n = 0;
-      var words = function(s){ return (s.trim().match(/\S+/g)||[]).length; };
-      if(reduce){ el.textContent = letter; wc.textContent = words(letter); return; }
-      el.textContent = '';
-      timers.push(setInterval(function(){
-        n = Math.min(letter.length, n + 2);
-        el.textContent = letter.slice(0,n); wc.textContent = words(el.textContent);
-      }, 45));
+      if(reduce){ el.textContent = letter; wc.textContent = words(letter); }
+      else {
+        el.textContent = '';
+        timers.push(setInterval(function(){
+          n = Math.min(letter.length, n + 2);
+          el.textContent = letter.slice(0, n); wc.textContent = words(el.textContent);
+        }, 45));
+      }
     }
     if(i===3){
       var a = document.getElementById('phPartner'), b = document.getElementById('phYou'), you = false;
-      var flip = function(){ you = !you; a.classList.toggle('off', you); b.classList.toggle('off', !you); };
       a.classList.remove('off'); b.classList.add('off');
-      if(!reduce) timers.push(setInterval(flip, 2600));
+      if(!reduce) timers.push(setInterval(function(){ you = !you; a.classList.toggle('off', you); b.classList.toggle('off', !you); }, 2600));
     }
     var scr4 = screens[4], stamp = document.getElementById('stamp');
-    if(i===4){
-      scr4.querySelectorAll('.bar i').forEach(function(b){ b.style.width='100%'; });
-      var cnts = scr4.querySelectorAll('.cnt'), v = reduce ? 100 : 0;
-      var draw = function(){ cnts.forEach(function(c){ c.textContent = v; }); };
+    var bars = scr4.querySelectorAll('.bar i'), cnts = scr4.querySelectorAll('.cnt');
+    stamp.classList.remove('in');
+    if(i===4 && !reduce){
+      [].forEach.call(bars, function(b){ b.style.transition = 'none'; b.style.width = '0'; });
+      void scr4.offsetWidth;
+      [].forEach.call(bars, function(b){ b.style.transition = ''; b.style.width = '100%'; });
+      var p = 0;
+      var draw = function(){ [].forEach.call(cnts, function(c){ c.textContent = Math.round(+c.dataset.max * p); }); };
       draw();
-      if(!reduce) timers.push(setInterval(function(){ v = Math.min(100, v + 4); draw(); }, 40));
-      timers.push(setTimeout(function(){ stamp.classList.add('in'); }, reduce ? 0 : 1300));
-    } else {
-      scr4.querySelectorAll('.bar i').forEach(function(b){ b.style.width='0'; });
-      stamp.classList.remove('in');
+      timers.push(setInterval(function(){ p = Math.min(1, p + .04); draw(); }, 40));
+      timers.push(setTimeout(function(){ stamp.classList.add('in'); }, 1300));
+    } else if(i===4){
+      stamp.classList.add('in');
     }
   }
-  onScroll();
+
+  update(false);
 })();
 </script>
