@@ -1,0 +1,28 @@
+---
+// Exam picker: family and level. Server-rendered for the default exam; the home script
+// keeps every picker on the page in sync.
+import { FAMILIES, EXAMS, type Family } from '../data/exams';
+import type { ExamId, Lang } from '../data/site';
+import { dict } from '../i18n';
+
+interface Props { lang: Lang; current: ExamId; compact?: boolean }
+const { lang, current } = Astro.props;
+const d = dict(lang);
+const cur = EXAMS[current];
+const fams = Object.keys(FAMILIES) as Family[];
+---
+<div class="picker" data-picker>
+  <div class="p-row" role="group" aria-label={d.picker.exam}>
+    {fams.map((f) => (
+      <button type="button" class={`p-fam p-${f}`} data-fam={f} aria-pressed={cur.family === f ? 'true' : 'false'}>{FAMILIES[f].name}</button>
+    ))}
+  </div>
+  <div class="p-row" role="group" aria-label={d.picker.level}>
+    {FAMILIES[cur.family].levels.map((id) => (
+      <button type="button" class="p-lvl" data-lvl={EXAMS[id].level} aria-pressed={id === current ? 'true' : 'false'}>{EXAMS[id].level}</button>
+    ))}
+    {cur.family !== 'dtz' && ['B2', 'C1'].map((l) => (
+      <button type="button" class="p-lvl" disabled aria-label={`${l}, ${d.picker.soon}`}>{l} <small>{d.picker.soon}</small></button>
+    ))}
+  </div>
+</div>
